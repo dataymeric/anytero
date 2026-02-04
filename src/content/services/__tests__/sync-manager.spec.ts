@@ -8,6 +8,7 @@ import {
   zoteroMock,
 } from '../../../../test/utils';
 import { NotionAuthManager } from '../../auth';
+import { AnytypeAuthManager } from '../../anytype';
 import { getSyncedNotes } from '../../data/item-data';
 import { saveSyncConfigs } from '../../prefs/collection-sync-config';
 import { NoteroPref, setNoteroPref } from '../../prefs/notero-pref';
@@ -18,6 +19,7 @@ import { EventManager, SyncManager } from '../index';
 vi.mock('../../data/item-data');
 vi.mock('../../sync/sync-job');
 vi.mock('../../utils/parse-item-date');
+vi.mock('../../anytype');
 
 vi.mocked(parseItemDate).mockImplementation((date) => new Date(date));
 
@@ -138,9 +140,10 @@ function setup({
 
   const eventManager = new EventManager();
   const notionAuthManager = new NotionAuthManager();
+  const anytypeAuthManager = new AnytypeAuthManager();
   const syncManager = new SyncManager();
 
-  const dependencies = { eventManager, notionAuthManager };
+  const dependencies = { eventManager, notionAuthManager, anytypeAuthManager };
 
   syncManager.startup({ dependencies, pluginInfo });
 
@@ -150,6 +153,7 @@ function setup({
 
   setNoteroPref(NoteroPref.syncNotes, syncNotes);
   setNoteroPref(NoteroPref.syncOnModifyItems, syncOnModifyItems);
+  setNoteroPref(NoteroPref.notionDatabaseID, 'test-database-id');
 
   return { eventManager };
 }

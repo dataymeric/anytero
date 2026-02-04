@@ -1,4 +1,5 @@
 import { getSyncedNotes } from '../data/item-data';
+import { performAnytypeSyncJob } from '../anytype';
 import { loadSyncEnabledCollectionIDs } from '../prefs/collection-sync-config';
 import { getNoteroPref, NoteroPref } from '../prefs/notero-pref';
 import { performSyncJob } from '../sync/sync-job';
@@ -18,18 +19,22 @@ export class SyncManager implements Service {
   private eventManager!: EventManager;
 
   private getNotionAuthToken!: () => Promise<string>;
+  private getAnytypeClient!: (window: Window) => Promise<any>;
 
   private queuedSync?: QueuedSync;
 
   private syncInProgress = false;
 
   public startup({
-    dependencies: { eventManager, notionAuthManager },
-  }: ServiceParams<'eventManager' | 'notionAuthManager'>) {
+    dependencies: { eventManager, notionAuthManager, anytypeAuthManager },
+  }: ServiceParams<'eventManager' | 'notionAuthManager' | 'anytypeAuthManager'>) {
     this.eventManager = eventManager;
 
     this.getNotionAuthToken =
       notionAuthManager.getRequiredAuthToken.bind(notionAuthManager);
+    
+    this.getAnytypeClient =
+      anytypeAuthManager.createClient.bind(anytypeAuthManager);
 
     const { addListener } = this.eventManager;
 
@@ -259,7 +264,23 @@ export class SyncManager implements Service {
     this.queuedSync = undefined as QueuedSync | undefined;
     this.syncInProgress = true;
 
-    await performSyncJob(itemIDs, this.getNotionAuthToken, mainWindow);
+    // Check which service is configured
+    const anytypeSpaceId = getNoteroPref(NoteroPref.anytypeSpaceId);
+    const notionDatabaseId = getNoteroPref(NoteroPref.notionDatabaseID);
+
+    try {
+      if (anytypeSpaceId) {
+        // Use Anytype if space is configured
+        await performAnytypeSyncJob(itemIDs, () => this.getAnytypeClient(mainWindow), mainWindow);
+      } else if (notionDatabaseId) {
+        // Fall back to Notion
+        await performSyncJob(itemIDs, this.getNotionAuthToken, mainWindow);
+      } else {
+        logger.warn('No sync service configured (neither Anytype nor Notion)');
+      }
+    } catch (error) {
+      logger.error('Sync failed:', error);
+    }
 
     if (this.queuedSync && !this.queuedSync.timeoutID) {
       await this.performSync();

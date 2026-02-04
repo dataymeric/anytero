@@ -1,6 +1,7 @@
 import type { Client } from '@notionhq/client';
 
 import { NotionAuthManager } from './auth';
+import { AnytypeAuthManager, type AnytypeClient } from './anytype';
 import type { PluginInfo } from './plugin-info';
 import {
   EventManager,
@@ -18,6 +19,7 @@ import { logger } from './utils';
 export class Notero {
   public readonly eventManager: EventManager;
   public readonly notionAuthManager: NotionAuthManager;
+  public readonly anytypeAuthManager: AnytypeAuthManager;
 
   private readonly preferencePaneManager: PreferencePaneManager;
   private readonly services: Service[];
@@ -25,11 +27,13 @@ export class Notero {
   public constructor() {
     this.eventManager = new EventManager();
     this.notionAuthManager = new NotionAuthManager();
+    this.anytypeAuthManager = new AnytypeAuthManager();
     this.preferencePaneManager = new PreferencePaneManager();
 
     this.services = [
       this.eventManager,
       this.notionAuthManager,
+      this.anytypeAuthManager,
       this.preferencePaneManager,
       new ProtocolHandlerExtension(),
       new SyncManager(),
@@ -53,6 +57,7 @@ export class Notero {
     const dependencies: ServiceParams['dependencies'] = {
       eventManager: this.eventManager,
       notionAuthManager: this.notionAuthManager,
+      anytypeAuthManager: this.anytypeAuthManager,
       preferencePaneManager: this.preferencePaneManager,
     };
 
@@ -126,6 +131,13 @@ export class Notero {
     propertyName: string = 'title',
   ): Promise<Set<string>> {
     return findDuplicates(await this.getNotionClient(), propertyName);
+  }
+
+  public async getAnytypeClient(): Promise<AnytypeClient> {
+    const mainWindow = Zotero.getMainWindow();
+    if (!mainWindow) throw new Error('No window available');
+
+    return this.anytypeAuthManager.createClient(mainWindow);
   }
 }
 

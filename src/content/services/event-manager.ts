@@ -1,6 +1,7 @@
 import { EventEmitter } from 'eventemitter3';
 
 import type { NotionConnection } from '../auth';
+import type { AnytypeApiKey } from '../anytype';
 import { logger } from '../utils';
 
 import type { Service } from './service';
@@ -36,6 +37,8 @@ type EventTypes = {
   'notifier-event': NotifierEventListener;
   'notion-connection.add': (connection: NotionConnection) => void;
   'notion-connection.remove': (connection: NotionConnection) => void;
+  'anytype-connection.add': (apiKey: { api_key: string }) => void;
+  'anytype-connection.remove': (apiKey: AnytypeApiKey) => void;
   'request-sync-collection': (collection: Zotero.Collection) => void;
   'request-sync-items': (items: Zotero.Item[]) => void;
 };
