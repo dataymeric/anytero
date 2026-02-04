@@ -279,7 +279,7 @@ export class AnytypeClient {
   public async deleteObject(spaceId: string, objectId: string): Promise<void> {
     logger.debug('Deleting object:', objectId, 'in space:', spaceId);
 
-    await this.request<void>(`/v1/spaces/${spaceId}/objects/${objectId}`, {
+    await this.request<Record<string, never>>(`/v1/spaces/${spaceId}/objects/${objectId}`, {
       method: 'DELETE',
     });
   }

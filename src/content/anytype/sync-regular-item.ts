@@ -5,9 +5,10 @@
  */
 
 import { LocalizableError } from '../errors';
+import { PageTitleFormat } from '../prefs/notero-pref';
 import { logger } from '../utils';
 
-import type { AnytypeClient, AnytypeObject } from './anytype-client';
+import type { AnytypeClient, AnytypeObject, AnytypeProperty } from './anytype-client';
 import {
   getAnytypeObjectID,
   saveAnytypeLinkAttachment,
@@ -18,7 +19,7 @@ import { buildAnytypeProperties } from './property-builder';
 export type SyncRegularItemParams = {
   anytypeClient: AnytypeClient;
   citationFormat: string;
-  pageTitleFormat: any;
+  pageTitleFormat: PageTitleFormat;
   spaceId: string;
   typeKey: string;
 };
@@ -70,7 +71,7 @@ async function createObject(
   spaceId: string,
   typeKey: string,
   name: string,
-  properties: any[],
+  properties: AnytypeProperty[],
 ): Promise<AnytypeObject> {
   logger.debug('Creating object in space', spaceId, { name, properties });
 
@@ -97,7 +98,7 @@ async function updateObject(
   spaceId: string,
   objectId: string,
   name: string,
-  properties: any[],
+  properties: AnytypeProperty[],
 ): Promise<AnytypeObject> {
   logger.debug('Updating object', objectId, 'in space', spaceId, {
     name,

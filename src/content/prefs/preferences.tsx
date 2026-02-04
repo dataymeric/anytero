@@ -8,7 +8,6 @@ import type { FluentMessageId } from '../../locale/fluent-types';
 import type {
   AnytypeAuthManager,
   AnytypeClient,
-  AnytypeSpace,
 } from '../anytype';
 import type { NotionAuthManager } from '../auth';
 import { LocalizableError } from '../errors';
@@ -482,7 +481,7 @@ class Preferences {
     }
   }
 
-  private async initAnytypeTypeMenu(): Promise<void> {
+  private initAnytypeTypeMenu(): void {
     const menuItems: MenuItem[] = [
       { label: 'Page', value: 'page' },
       { label: 'Note', value: 'note' },

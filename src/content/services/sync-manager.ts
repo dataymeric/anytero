@@ -1,4 +1,4 @@
-import { performAnytypeSyncJob } from '../anytype';
+import { performAnytypeSyncJob, type AnytypeClient } from '../anytype';
 import { getSyncedNotes } from '../data/item-data';
 import { loadSyncEnabledCollectionIDs } from '../prefs/collection-sync-config';
 import { getNoteroPref, NoteroPref } from '../prefs/notero-pref';
@@ -19,7 +19,7 @@ export class SyncManager implements Service {
   private eventManager!: EventManager;
 
   private getNotionAuthToken!: () => Promise<string>;
-  private getAnytypeClient!: (window: Window) => Promise<any>;
+  private getAnytypeClient!: (window: Window) => Promise<AnytypeClient>;
 
   private queuedSync?: QueuedSync;
 

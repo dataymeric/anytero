@@ -11,7 +11,10 @@ describe('AnytypeClient', () => {
   beforeEach(() => {
     mockWindow = createWindowMock();
     mockFetch = vi.fn();
-    (mockWindow as any).fetch = mockFetch;
+    Object.defineProperty(mockWindow, 'fetch', {
+      value: mockFetch,
+      writable: true,
+    });
     client = new AnytypeClient('http://localhost:31009', mockWindow);
   });
 
@@ -21,7 +24,7 @@ describe('AnytypeClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ challenge_id: challengeId }),
+        json: () => Promise.resolve({ challenge_id: challengeId }),
       });
 
       const challenge = await client.startAuthChallenge('TestApp');
@@ -41,7 +44,7 @@ describe('AnytypeClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ api_key: apiKey }),
+        json: () => Promise.resolve({ api_key: apiKey }),
       });
 
       const result = await client.completeAuthChallenge(
@@ -59,7 +62,7 @@ describe('AnytypeClient', () => {
         ok: false,
         status: 401,
         statusText: 'Unauthorized',
-        text: async () => 'Invalid code',
+        text: () => Promise.resolve('Invalid code'),
       });
 
       await expect(
@@ -82,7 +85,7 @@ describe('AnytypeClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ spaces }),
+        json: () => Promise.resolve({ spaces }),
       });
 
       const result = await client.listSpaces();
@@ -249,7 +252,7 @@ describe('AnytypeClient', () => {
         ok: false,
         status: 404,
         statusText: 'Not Found',
-        text: async () => JSON.stringify({ error: 'Object not found' }),
+        text: () => Promise.resolve(JSON.stringify({ error: 'Object not found' })),
       });
 
       await expect(client.getObject('space_1', 'invalid')).rejects.toThrow(

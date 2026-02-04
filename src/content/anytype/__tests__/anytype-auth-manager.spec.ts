@@ -4,6 +4,7 @@ import type { EventManager } from '../../services/event-manager';
 import type { PreferencePaneManager } from '../../services/preference-pane-manager';
 import { AnytypeAuthManager } from '../anytype-auth-manager';
 import * as anytypeClient from '../anytype-client';
+import type { AnytypeClient } from '../anytype-client';
 import * as storage from '../storage';
 
 // Mock modules
@@ -31,7 +32,11 @@ describe('AnytypeAuthManager', () => {
   let mockEventManager: EventManager;
   let mockPreferencePaneManager: PreferencePaneManager;
   let mockWindow: Window;
-  let mockClient: any;
+  let mockClient: {
+    startAuthChallenge: ReturnType<typeof vi.fn>;
+    completeAuthChallenge: ReturnType<typeof vi.fn>;
+    checkHealth: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     // Setup mock window
@@ -57,7 +62,9 @@ describe('AnytypeAuthManager', () => {
     };
 
     // Mock the client factory
-    vi.mocked(anytypeClient.createAnytypeClient).mockReturnValue(mockClient);
+    vi.mocked(anytypeClient.createAnytypeClient).mockReturnValue(
+      mockClient as unknown as AnytypeClient,
+    );
 
     // Mock storage functions
     vi.mocked(storage.getAllApiKeys).mockResolvedValue([]);
@@ -69,7 +76,8 @@ describe('AnytypeAuthManager', () => {
         eventManager: mockEventManager,
         preferencePaneManager: mockPreferencePaneManager,
       },
-    } as any);
+      pluginInfo: {} as never,
+    });
   });
 
   describe('authentication flow', () => {
@@ -125,13 +133,13 @@ describe('AnytypeAuthManager', () => {
       ).rejects.toThrow();
     });
 
-    it('should cancel auth session', () => {
+    it('should cancel auth session', async () => {
       const challengeId = 'challenge_123';
       vi.mocked(mockClient.startAuthChallenge).mockResolvedValue({
         challenge_id: challengeId,
       });
 
-      authManager.startAuth(mockWindow);
+      await authManager.startAuth(mockWindow);
       authManager.cancelAuth();
 
       expect(authManager.getCurrentSession()).toBeNull();
