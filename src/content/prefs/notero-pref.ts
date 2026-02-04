@@ -2,6 +2,9 @@ import { FluentMessageId } from '../../locale/fluent-types';
 import { MissingPrefError } from '../errors';
 
 export enum NoteroPref {
+  anytypeApiKey = 'anytypeApiKey',
+  anytypeSpaceId = 'anytypeSpaceId',
+  anytypeTypeKey = 'anytypeTypeKey',
   collectionSyncConfigs = 'collectionSyncConfigs',
   notionDatabaseID = 'notionDatabaseID',
   notionToken = 'notionToken',
@@ -36,6 +39,9 @@ export const PAGE_TITLE_FORMAT_L10N_IDS: Record<
 };
 
 type NoteroPrefValue = Partial<{
+  [NoteroPref.anytypeApiKey]: string;
+  [NoteroPref.anytypeSpaceId]: string;
+  [NoteroPref.anytypeTypeKey]: string;
   [NoteroPref.collectionSyncConfigs]: string;
   [NoteroPref.notionDatabaseID]: string;
   [NoteroPref.notionToken]: string;
@@ -83,6 +89,9 @@ function convertRawPrefValue<P extends NoteroPref>(
     undefined;
 
   return {
+    [NoteroPref.anytypeApiKey]: stringPref,
+    [NoteroPref.anytypeSpaceId]: stringPref,
+    [NoteroPref.anytypeTypeKey]: stringPref,
     [NoteroPref.collectionSyncConfigs]: stringPref,
     [NoteroPref.notionDatabaseID]: stringPref,
     [NoteroPref.notionToken]: stringPref,
