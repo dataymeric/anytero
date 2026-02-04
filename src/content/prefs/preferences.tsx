@@ -6,6 +6,7 @@ import type { createRoot } from 'react-dom/client';
 
 import type { FluentMessageId } from '../../locale/fluent-types';
 import type { NotionAuthManager } from '../auth';
+import type { AnytypeAuthManager, AnytypeClient, AnytypeSpace } from '../anytype';
 import { LocalizableError } from '../errors';
 import type { EventManager } from '../services';
 import { getNotionClient } from '../sync/notion-client';
@@ -49,6 +50,7 @@ function setMenuItems(menuList: XUL.MenuListElement, items: MenuItem[]): void {
 class Preferences {
   private eventManager!: EventManager;
   private notionAuthManager!: NotionAuthManager;
+  private anytypeAuthManager!: AnytypeAuthManager;
   private notionConnectionContainer!: XUL.XULElement;
   private notionConnectionSpinner!: XUL.XULElement;
   private notionConnectButton!: XUL.ButtonElement;
@@ -58,6 +60,17 @@ class Preferences {
   private notionError!: XUL.LabelElement;
   private notionTokenContainer!: XUL.XULElement;
   private notionWorkspaceLabel!: XUL.LabelElement;
+  private anytypeConnectionContainer!: XUL.XULElement;
+  private anytypeConnectionSpinner!: XUL.XULElement;
+  private anytypeConnectButton!: XUL.ButtonElement;
+  private anytypeDisconnectButton!: XUL.ButtonElement;
+  private anytypeAuthContainer!: XUL.XULElement;
+  private anytypeCodeInput!: HTMLInputElement;
+  private anytypeVerifyButton!: XUL.ButtonElement;
+  private anytypeSpaceMenu!: XUL.MenuListElement;
+  private anytypeTypeMenu!: XUL.MenuListElement;
+  private anytypeError!: XUL.LabelElement;
+  private anytypeCurrentChallenge?: string;
   private pageTitleFormatMenu!: XUL.MenuListElement;
 
   public async init(): Promise<void> {
@@ -65,6 +78,7 @@ class Preferences {
 
     this.eventManager = getGlobalNotero().eventManager;
     this.notionAuthManager = getGlobalNotero().notionAuthManager;
+    this.anytypeAuthManager = getGlobalNotero().anytypeAuthManager;
 
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
     this.notionConnectionContainer = getXULElementById(
@@ -84,6 +98,20 @@ class Preferences {
       'notero-notionToken-container',
     )!;
     this.notionWorkspaceLabel = getXULElementById('notero-notionWorkspace')!;
+    this.anytypeConnectionContainer = getXULElementById(
+      'notero-anytypeConnection-container',
+    )!;
+    this.anytypeConnectionSpinner = getXULElementById(
+      'notero-anytypeConnection-spinner',
+    )!;
+    this.anytypeConnectButton = getXULElementById('notero-anytypeConnect')!;
+    this.anytypeDisconnectButton = getXULElementById('notero-anytypeDisconnect')!;
+    this.anytypeAuthContainer = getXULElementById('notero-anytypeAuth-container')!;
+    this.anytypeCodeInput = document.getElementById('notero-anytypeCode') as HTMLInputElement;
+    this.anytypeVerifyButton = getXULElementById('notero-anytypeVerify')!;
+    this.anytypeSpaceMenu = getXULElementById('notero-anytypeSpace')!;
+    this.anytypeTypeMenu = getXULElementById('notero-anytypeType')!;
+    this.anytypeError = getXULElementById('notero-anytypeError')!;
     this.pageTitleFormatMenu = getXULElementById('notero-pageTitleFormat')!;
     /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
@@ -98,6 +126,9 @@ class Preferences {
       this.upgradeNotionConnection,
     );
     this.notionTokenContainer.addEventListener('input', this.handleTokenInput);
+    this.anytypeConnectButton.addEventListener('command', this.connectAnytype);
+    this.anytypeDisconnectButton.addEventListener('command', this.disconnectAnytype);
+    this.anytypeVerifyButton.addEventListener('command', this.verifyAnytypeCode);
     /* eslint-enable @typescript-eslint/no-misused-promises */
 
     window.addEventListener('unload', () => {
@@ -110,11 +141,16 @@ class Preferences {
     // Don't block window from loading while waiting for network responses
     setTimeout(() => {
       void this.refreshNotionConnectionSection();
+      void this.refreshAnytypeConnectionSection();
     }, 100);
 
     this.eventManager.addListener(
       'notion-connection.add',
       this.handleNotionConnectionAdd,
+    );
+    this.eventManager.addListener(
+      'anytype-connection.add',
+      this.handleAnytypeConnectionAdd,
     );
   }
 
@@ -122,6 +158,10 @@ class Preferences {
     this.eventManager.removeListener(
       'notion-connection.add',
       this.handleNotionConnectionAdd,
+    );
+    this.eventManager.removeListener(
+      'anytype-connection.add',
+      this.handleAnytypeConnectionAdd,
     );
   }
 
@@ -344,6 +384,170 @@ class Preferences {
       logger.error(error);
       await this.showError(error);
     }
+  };
+
+  // Anytype methods
+
+  private handleAnytypeConnectionAdd = () => {
+    void this.refreshAnytypeConnectionSection();
+  };
+
+  private async refreshAnytypeConnectionSection(): Promise<void> {
+    const apiKey = await this.anytypeAuthManager.getOptionalApiKey();
+
+    this.anytypeError.hidden = true;
+
+    if (!apiKey) {
+      this.anytypeConnectButton.hidden = false;
+      this.anytypeConnectionContainer.hidden = true;
+      this.anytypeAuthContainer.hidden = true;
+      return;
+    }
+
+    this.anytypeConnectionSpinner.setAttribute('status', 'animate');
+
+    try {
+      const client = await this.anytypeAuthManager.createClient(window);
+
+      // Check if Anytype is available
+      const isAvailable = await client.checkHealth();
+      if (!isAvailable) {
+        throw new LocalizableError(
+          'Anytype is not running',
+          'notero-error-anytype-auth-start-failed',
+        );
+      }
+
+      this.anytypeConnectButton.hidden = true;
+      this.anytypeAuthContainer.hidden = true;
+      this.anytypeConnectionContainer.hidden = false;
+      this.anytypeConnectionSpinner.removeAttribute('status');
+
+      await this.refreshAnytypeSpaceMenu(client);
+      await this.initAnytypeTypeMenu();
+    } catch (error) {
+      logger.error(error);
+
+      this.anytypeConnectionSpinner.removeAttribute('status');
+      await this.showAnytypeError(error);
+
+      this.anytypeConnectButton.hidden = false;
+      this.anytypeConnectionContainer.hidden = true;
+    }
+  }
+
+  private async showAnytypeError(error: unknown): Promise<void> {
+    this.anytypeError.hidden = false;
+    this.anytypeError.value = await getLocalizedErrorMessage(
+      error,
+      document.l10n,
+    );
+  }
+
+  private async refreshAnytypeSpaceMenu(
+    client: AnytypeClient,
+  ): Promise<void> {
+    let menuItems: MenuItem[] = [];
+
+    this.anytypeSpaceMenu.disabled = true;
+
+    try {
+      const spaces = await client.listSpaces();
+
+      menuItems = spaces.map<MenuItem>((space) => ({
+        label: space.name || space.id,
+        value: space.id,
+      }));
+
+      this.anytypeSpaceMenu.disabled = false;
+    } catch (error) {
+      logger.error('Failed to load Anytype spaces:', error);
+      throw error;
+    } finally {
+      setMenuItems(this.anytypeSpaceMenu, menuItems);
+    }
+  }
+
+  private async initAnytypeTypeMenu(): Promise<void> {
+    const menuItems: MenuItem[] = [
+      { label: 'Page', value: 'page' },
+      { label: 'Note', value: 'note' },
+      { label: 'Task', value: 'task' },
+      { label: 'Custom', value: 'custom' },
+    ];
+
+    setMenuItems(this.anytypeTypeMenu, menuItems);
+    this.anytypeTypeMenu.disabled = false;
+  }
+
+  private connectAnytype = async (): Promise<void> => {
+    this.anytypeConnectButton.disabled = true;
+    this.anytypeError.hidden = true;
+
+    try {
+      // Check if Anytype is available
+      const isAvailable = await this.anytypeAuthManager.checkAnytypeAvailable(window);
+      if (!isAvailable) {
+        throw new LocalizableError(
+          'Anytype desktop app is not running',
+          'notero-error-anytype-auth-start-failed',
+        );
+      }
+
+      const challenge = await this.anytypeAuthManager.startAuth(window);
+      this.anytypeCurrentChallenge = challenge.challenge_id;
+
+      // Show the auth container with code input
+      this.anytypeConnectButton.hidden = true;
+      this.anytypeAuthContainer.hidden = false;
+      this.anytypeCodeInput.value = '';
+      this.anytypeCodeInput.focus();
+    } catch (error) {
+      logger.error('Failed to start Anytype auth:', error);
+      await this.showAnytypeError(error);
+      this.anytypeConnectButton.disabled = false;
+    }
+  };
+
+  private verifyAnytypeCode = async (): Promise<void> => {
+    const code = this.anytypeCodeInput.value.trim();
+
+    if (!code || code.length !== 4) {
+      await this.showAnytypeError(
+        new Error('Please enter the 4-digit code from Anytype'),
+      );
+      return;
+    }
+
+    this.anytypeVerifyButton.disabled = true;
+    this.anytypeError.hidden = true;
+
+    try {
+      await this.anytypeAuthManager.completeAuth(code, window);
+      // Connection will be refreshed by the event listener
+    } catch (error) {
+      logger.error('Failed to verify Anytype code:', error);
+      await this.showAnytypeError(error);
+      this.anytypeVerifyButton.disabled = false;
+    }
+  };
+
+  private disconnectAnytype = async (): Promise<void> => {
+    const dialogTitle =
+      (await document.l10n.formatValue(
+        'notero-preferences-anytype-disconnect-dialog-title',
+      )) || 'Disconnect Anytype';
+    const dialogText =
+      (await document.l10n.formatValue(
+        'notero-preferences-anytype-disconnect-dialog-text',
+      )) || 'Disconnect from Anytype';
+
+    const confirmed = Services.prompt.confirm(null, dialogTitle, dialogText);
+    if (!confirmed) return;
+
+    await this.anytypeAuthManager.removeAllApiKeys();
+
+    await this.refreshAnytypeConnectionSection();
   };
 }
 

@@ -23,6 +23,21 @@ notero-preferences-notion-token-input =
 notero-preferences-notion-workspace = Workspace: { $workspace-name }
 notero-preferences-notion-database = Database:
 
+## Anytype preferences
+
+notero-preferences-anytype-groupbox-heading = Anytype Connection
+notero-preferences-anytype-connect-button = Connect to Anytype
+notero-preferences-anytype-disconnect-button = Disconnect…
+notero-preferences-anytype-disconnect-dialog-title = Disconnect Anytype
+notero-preferences-anytype-disconnect-dialog-text = Disconnecting from Anytype will prevent further syncing. It will not remove any content that has already been synced.
+notero-preferences-anytype-auth-instructions = Enter the 4-digit code shown in your Anytype desktop app:
+notero-preferences-anytype-code-label = Authentication Code:
+notero-preferences-anytype-code-input =
+    .placeholder = Enter 4-digit code
+notero-preferences-anytype-connected = Connected to Anytype
+notero-preferences-anytype-space = Space:
+notero-preferences-anytype-type = Object Type:
+
 ## Property preferences
 
 notero-preferences-properties-groupbox-heading = Property Preferences
@@ -65,6 +80,12 @@ notero-progress-item = Item { $step } of { $total }
 
 notero-error-missing-notion-database = Notion database not selected. Please select your database in Notero preferences.
 notero-error-missing-notion-token = Not authorized with Notion. Please connect to Notion in Notero preferences.
+notero-error-missing-anytype-api-key = Not authorized with Anytype. Please connect to Anytype in Notero preferences.
+notero-error-anytype-auth-start-failed = Failed to start Anytype authentication. Please ensure Anytype desktop app is running.
+notero-error-anytype-no-auth-session = No active Anytype authentication session. Please try connecting again.
+notero-error-anytype-auth-complete-failed = Failed to complete Anytype authentication. Please check your code and try again.
+notero-error-anytype-create-failed = Failed to create Anytype object. Please check your connection and try again.
+notero-error-anytype-update-failed = Failed to update Anytype object. Please check your connection and try again.
 notero-error-missing-pref = Missing value for { $pref }. Please enter it in Notero preferences.
 notero-error-no-notion-databases = No Notion databases are accessible.
 notero-error-note-conversion-failed = Failed to convert note content to Notion blocks.

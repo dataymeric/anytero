@@ -67,6 +67,87 @@
 
 <groupbox class="notero-groupbox">
   <label>
+    <html:h2 data-l10n-id="notero-preferences-anytype-groupbox-heading" />
+  </label>
+  <hbox>
+    <button
+      class="notero-margin-block-end"
+      data-l10n-id="notero-preferences-anytype-connect-button"
+      hidden="true"
+      id="notero-anytypeConnect"
+    />
+  </hbox>
+  <image class="zotero-spinner-16" id="notero-anytypeConnection-spinner" />
+  <vbox
+    align="start"
+    class="notero-margin-block-end"
+    hidden="true"
+    id="notero-anytypeAuth-container"
+  >
+    <label data-l10n-id="notero-preferences-anytype-auth-instructions" />
+    <hbox align="center" class="notero-margin-block-start">
+      <label
+        control="notero-anytypeCode"
+        data-l10n-id="notero-preferences-anytype-code-label"
+      />
+      <html:input
+        data-l10n-id="notero-preferences-anytype-code-input"
+        id="notero-anytypeCode"
+        type="text"
+        maxlength="4"
+        style="width: 100px;"
+      />
+      <button
+        label="Verify"
+        id="notero-anytypeVerify"
+      />
+    </hbox>
+  </vbox>
+  <vbox align="start" hidden="true" id="notero-anytypeConnection-container">
+    <hbox align="center">
+      <label
+        data-l10n-id="notero-preferences-anytype-connected"
+        id="notero-anytypeStatus"
+      />
+      <button
+        data-l10n-id="notero-preferences-anytype-disconnect-button"
+        id="notero-anytypeDisconnect"
+      />
+    </hbox>
+    <hbox align="center" class="notero-margin-block-start">
+      <label
+        control="notero-anytypeSpace"
+        data-l10n-id="notero-preferences-anytype-space"
+      />
+      <menulist
+        id="notero-anytypeSpace"
+        disabled="true"
+        native="true"
+        preference="extensions.notero.anytypeSpaceId"
+      >
+        <menupopup />
+      </menulist>
+    </hbox>
+    <hbox align="center" class="notero-margin-block-start">
+      <label
+        control="notero-anytypeType"
+        data-l10n-id="notero-preferences-anytype-type"
+      />
+      <menulist
+        id="notero-anytypeType"
+        disabled="true"
+        native="true"
+        preference="extensions.notero.anytypeTypeKey"
+      >
+        <menupopup />
+      </menulist>
+    </hbox>
+  </vbox>
+  <label class="notero-error" hidden="true" id="notero-anytypeError" />
+</groupbox>
+
+<groupbox class="notero-groupbox">
+  <label>
     <html:h2 data-l10n-id="notero-preferences-properties-groupbox-heading" />
   </label>
   <label data-l10n-id="notero-preferences-properties-groupbox-description" />
