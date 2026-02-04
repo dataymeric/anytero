@@ -7,8 +7,8 @@ import {
   mockZoteroPrefs,
   zoteroMock,
 } from '../../../../test/utils';
-import { NotionAuthManager } from '../../auth';
 import { AnytypeAuthManager } from '../../anytype';
+import { NotionAuthManager } from '../../auth';
 import { getSyncedNotes } from '../../data/item-data';
 import { saveSyncConfigs } from '../../prefs/collection-sync-config';
 import { NoteroPref, setNoteroPref } from '../../prefs/notero-pref';

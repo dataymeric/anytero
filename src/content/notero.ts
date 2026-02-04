@@ -1,7 +1,7 @@
 import type { Client } from '@notionhq/client';
 
-import { NotionAuthManager } from './auth';
 import { AnytypeAuthManager, type AnytypeClient } from './anytype';
+import { NotionAuthManager } from './auth';
 import type { PluginInfo } from './plugin-info';
 import {
   EventManager,

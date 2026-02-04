@@ -1,6 +1,6 @@
 /**
  * Anytype Authentication Manager
- * 
+ *
  * Manages authentication flow with Anytype using challenge-response mechanism.
  * Stores API keys securely using Zotero's login manager.
  */

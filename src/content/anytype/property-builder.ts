@@ -1,12 +1,12 @@
 /**
  * Anytype Property Builder
- * 
+ *
  * Builds Anytype object properties from Zotero items
  */
 
+import type { AnytypeProperty } from '../anytype';
 import { NOTION_TAG_NAME } from '../constants';
 import { PageTitleFormat } from '../prefs/notero-pref';
-import type { AnytypeProperty } from '../anytype';
 import {
   buildCollectionFullName,
   getItemURL,
@@ -212,10 +212,11 @@ class AnytypePropertyBuilder {
     {
       key: 'collections',
       buildValue: () => {
-        const collections = Zotero.Collections.get(this.item.getCollections())
-          .map((collection) =>
-            sanitizeText(buildCollectionFullName(collection), 100),
-          );
+        const collections = Zotero.Collections.get(
+          this.item.getCollections(),
+        ).map((collection) =>
+          sanitizeText(buildCollectionFullName(collection), 100),
+        );
 
         if (collections.length === 0) return null;
 
@@ -340,7 +341,9 @@ class AnytypePropertyBuilder {
     {
       key: 'item_type',
       buildValue: () => {
-        const itemType = Zotero.ItemTypes.getLocalizedString(this.item.itemTypeID);
+        const itemType = Zotero.ItemTypes.getLocalizedString(
+          this.item.itemTypeID,
+        );
         if (!itemType) return null;
         return {
           key: 'item_type',
@@ -408,7 +411,9 @@ class AnytypePropertyBuilder {
       buildValue: () => {
         const tags = this.item
           .getTags()
-          .filter(({ tag }) => tag !== NOTION_TAG_NAME && tag !== ANYTYPE_TAG_NAME)
+          .filter(
+            ({ tag }) => tag !== NOTION_TAG_NAME && tag !== ANYTYPE_TAG_NAME,
+          )
           .map(({ tag }) => sanitizeText(tag, 50));
 
         if (tags.length === 0) return null;

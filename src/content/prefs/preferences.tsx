@@ -5,8 +5,12 @@ import ReactDOM from 'react-dom';
 import type { createRoot } from 'react-dom/client';
 
 import type { FluentMessageId } from '../../locale/fluent-types';
+import type {
+  AnytypeAuthManager,
+  AnytypeClient,
+  AnytypeSpace,
+} from '../anytype';
 import type { NotionAuthManager } from '../auth';
-import type { AnytypeAuthManager, AnytypeClient, AnytypeSpace } from '../anytype';
 import { LocalizableError } from '../errors';
 import type { EventManager } from '../services';
 import { getNotionClient } from '../sync/notion-client';
@@ -105,9 +109,15 @@ class Preferences {
       'notero-anytypeConnection-spinner',
     )!;
     this.anytypeConnectButton = getXULElementById('notero-anytypeConnect')!;
-    this.anytypeDisconnectButton = getXULElementById('notero-anytypeDisconnect')!;
-    this.anytypeAuthContainer = getXULElementById('notero-anytypeAuth-container')!;
-    this.anytypeCodeInput = document.getElementById('notero-anytypeCode') as HTMLInputElement;
+    this.anytypeDisconnectButton = getXULElementById(
+      'notero-anytypeDisconnect',
+    )!;
+    this.anytypeAuthContainer = getXULElementById(
+      'notero-anytypeAuth-container',
+    )!;
+    this.anytypeCodeInput = document.getElementById(
+      'notero-anytypeCode',
+    ) as HTMLInputElement;
     this.anytypeVerifyButton = getXULElementById('notero-anytypeVerify')!;
     this.anytypeSpaceMenu = getXULElementById('notero-anytypeSpace')!;
     this.anytypeTypeMenu = getXULElementById('notero-anytypeType')!;
@@ -127,8 +137,14 @@ class Preferences {
     );
     this.notionTokenContainer.addEventListener('input', this.handleTokenInput);
     this.anytypeConnectButton.addEventListener('command', this.connectAnytype);
-    this.anytypeDisconnectButton.addEventListener('command', this.disconnectAnytype);
-    this.anytypeVerifyButton.addEventListener('command', this.verifyAnytypeCode);
+    this.anytypeDisconnectButton.addEventListener(
+      'command',
+      this.disconnectAnytype,
+    );
+    this.anytypeVerifyButton.addEventListener(
+      'command',
+      this.verifyAnytypeCode,
+    );
     /* eslint-enable @typescript-eslint/no-misused-promises */
 
     window.addEventListener('unload', () => {
@@ -444,9 +460,7 @@ class Preferences {
     );
   }
 
-  private async refreshAnytypeSpaceMenu(
-    client: AnytypeClient,
-  ): Promise<void> {
+  private async refreshAnytypeSpaceMenu(client: AnytypeClient): Promise<void> {
     let menuItems: MenuItem[] = [];
 
     this.anytypeSpaceMenu.disabled = true;
@@ -486,7 +500,8 @@ class Preferences {
 
     try {
       // Check if Anytype is available
-      const isAvailable = await this.anytypeAuthManager.checkAnytypeAvailable(window);
+      const isAvailable =
+        await this.anytypeAuthManager.checkAnytypeAvailable(window);
       if (!isAvailable) {
         throw new LocalizableError(
           'Anytype desktop app is not running',

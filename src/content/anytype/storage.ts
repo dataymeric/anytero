@@ -1,6 +1,6 @@
 /**
  * Anytype API Key Storage
- * 
+ *
  * Manages secure storage of Anytype API keys using Zotero's login manager.
  */
 

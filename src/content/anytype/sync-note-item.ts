@@ -1,12 +1,17 @@
 /**
  * Anytype Sync Note Item
- * 
+ *
  * Handles syncing of Zotero notes to Anytype
  */
 
-import type { AnytypeClient } from './anytype-client';
-import { getAnytypeObjectID, getSyncedNotes, saveSyncedNote } from './item-data';
 import { logger } from '../utils';
+
+import type { AnytypeClient } from './anytype-client';
+import {
+  getAnytypeObjectID,
+  getSyncedNotes,
+  saveSyncedNote,
+} from './item-data';
 
 /**
  * Sync a Zotero note item to Anytype
@@ -58,7 +63,7 @@ export async function syncNoteItem(
         parentObjectId,
         noteContent,
       );
-      
+
       await saveSyncedNote(
         parentItem,
         syncedNotes.containerBlockID || parentObjectId,
@@ -140,7 +145,7 @@ function convertHtmlToMarkdown(html: string): string {
   // Strip HTML tags for now (basic implementation)
   const domParser = new DOMParser();
   const doc = domParser.parseFromString(html, 'text/html');
-  
+
   // Extract text content
   let markdown = doc.body.textContent || '';
 

@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AnytypeAuthManager } from '../anytype-auth-manager';
+
 import type { EventManager } from '../../services/event-manager';
 import type { PreferencePaneManager } from '../../services/preference-pane-manager';
+import { AnytypeAuthManager } from '../anytype-auth-manager';
 import * as anytypeClient from '../anytype-client';
 import * as storage from '../storage';
 
@@ -103,17 +104,25 @@ describe('AnytypeAuthManager', () => {
 
       await authManager.completeAuth('1234', mockWindow);
 
-      expect(mockClient.completeAuthChallenge).toHaveBeenCalledWith(challengeId, '1234');
+      expect(mockClient.completeAuthChallenge).toHaveBeenCalledWith(
+        challengeId,
+        '1234',
+      );
       expect(storage.saveApiKey).toHaveBeenCalledWith(apiKey);
-      expect(mockEventManager.emit).toHaveBeenCalledWith('anytype-connection.add', {
-        api_key: apiKey,
-      });
+      expect(mockEventManager.emit).toHaveBeenCalledWith(
+        'anytype-connection.add',
+        {
+          api_key: apiKey,
+        },
+      );
       expect(mockPreferencePaneManager.openPreferences).toHaveBeenCalled();
       expect(authManager.getCurrentSession()).toBeNull();
     });
 
     it('should throw error when completing auth without session', async () => {
-      await expect(authManager.completeAuth('1234', mockWindow)).rejects.toThrow();
+      await expect(
+        authManager.completeAuth('1234', mockWindow),
+      ).rejects.toThrow();
     });
 
     it('should cancel auth session', () => {
@@ -217,7 +226,10 @@ describe('AnytypeAuthManager', () => {
       const client = await authManager.createClient(mockWindow);
 
       expect(client).toBeDefined();
-      expect(anytypeClient.createAnytypeClient).toHaveBeenCalledWith(mockWindow, 'key1');
+      expect(anytypeClient.createAnytypeClient).toHaveBeenCalledWith(
+        mockWindow,
+        'key1',
+      );
     });
 
     it('should throw when creating client without API key', async () => {
@@ -246,4 +258,3 @@ describe('AnytypeAuthManager', () => {
     });
   });
 });
-

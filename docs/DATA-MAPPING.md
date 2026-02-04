@@ -10,17 +10,17 @@ Anytero transforms Zotero bibliographic items into Anytype objects. Since Zotero
 
 ### Zotero → Anytype
 
-| Zotero Item Type | Anytype Object Type | Notes |
-|-----------------|-------------------|-------|
-| Journal Article | Page | Standard page with properties |
-| Book | Page | Standard page with properties |
-| Book Section | Page | Standard page with properties |
-| Conference Paper | Page | Standard page with properties |
-| Thesis | Page | Standard page with properties |
-| Report | Page | Standard page with properties |
-| Webpage | Page | Standard page with properties |
-| Note | Page | Converted to page with note content |
-| All Others | Page | Generic page with available properties |
+| Zotero Item Type | Anytype Object Type | Notes                                  |
+| ---------------- | ------------------- | -------------------------------------- |
+| Journal Article  | Page                | Standard page with properties          |
+| Book             | Page                | Standard page with properties          |
+| Book Section     | Page                | Standard page with properties          |
+| Conference Paper | Page                | Standard page with properties          |
+| Thesis           | Page                | Standard page with properties          |
+| Report           | Page                | Standard page with properties          |
+| Webpage          | Page                | Standard page with properties          |
+| Note             | Page                | Converted to page with note content    |
+| All Others       | Page                | Generic page with available properties |
 
 **Note**: Anytype's REST API (as of v2025-11-08) primarily supports generic "page" objects. Future versions may support specialized object types.
 
@@ -28,47 +28,47 @@ Anytero transforms Zotero bibliographic items into Anytype objects. Since Zotero
 
 ### Core Metadata
 
-| Zotero Field | Anytype Property | Transformation |
-|-------------|-----------------|---------------|
-| `title` | `title` (name) | Direct mapping (string) |
-| `abstractNote` | `description` | Direct mapping (text) |
+| Zotero Field         | Anytype Property | Transformation                                            |
+| -------------------- | ---------------- | --------------------------------------------------------- |
+| `title`              | `title` (name)   | Direct mapping (string)                                   |
+| `abstractNote`       | `description`    | Direct mapping (text)                                     |
 | `creators` (authors) | `authors` (text) | Formatted as "LastName, FirstName; LastName2, FirstName2" |
-| `date` | `date` | Parsed to ISO date format (YYYY-MM-DD) |
-| `url` | `url` | Direct mapping (URL) |
-| `DOI` | `doi` | Direct mapping (string) |
-| `ISBN` | `isbn` | Direct mapping (string) |
-| `ISSN` | `issn` | Direct mapping (string) |
-| `itemType` | `type` | Direct mapping (e.g., "journalArticle", "book") |
+| `date`               | `date`           | Parsed to ISO date format (YYYY-MM-DD)                    |
+| `url`                | `url`            | Direct mapping (URL)                                      |
+| `DOI`                | `doi`            | Direct mapping (string)                                   |
+| `ISBN`               | `isbn`           | Direct mapping (string)                                   |
+| `ISSN`               | `issn`           | Direct mapping (string)                                   |
+| `itemType`           | `type`           | Direct mapping (e.g., "journalArticle", "book")           |
 
 ### Publication Information
 
-| Zotero Field | Anytype Property | Transformation |
-|-------------|-----------------|---------------|
-| `publicationTitle` | `publication` | Direct mapping (string) |
-| `volume` | `volume` | Direct mapping (string) |
-| `issue` | `issue` | Direct mapping (string) |
-| `pages` | `pages` | Direct mapping (string) |
-| `publisher` | `publisher` | Direct mapping (string) |
-| `place` | `place` | Direct mapping (string) |
+| Zotero Field       | Anytype Property | Transformation          |
+| ------------------ | ---------------- | ----------------------- |
+| `publicationTitle` | `publication`    | Direct mapping (string) |
+| `volume`           | `volume`         | Direct mapping (string) |
+| `issue`            | `issue`          | Direct mapping (string) |
+| `pages`            | `pages`          | Direct mapping (string) |
+| `publisher`        | `publisher`      | Direct mapping (string) |
+| `place`            | `place`          | Direct mapping (string) |
 
 ### Academic Metadata
 
-| Zotero Field | Anytype Property | Transformation |
-|-------------|-----------------|---------------|
-| `series` | `series` | Direct mapping (string) |
-| `seriesNumber` | `series_number` | Direct mapping (string) |
-| `edition` | `edition` | Direct mapping (string) |
-| `conference` | `conference` | Direct mapping (string) |
+| Zotero Field   | Anytype Property | Transformation          |
+| -------------- | ---------------- | ----------------------- |
+| `series`       | `series`         | Direct mapping (string) |
+| `seriesNumber` | `series_number`  | Direct mapping (string) |
+| `edition`      | `edition`        | Direct mapping (string) |
+| `conference`   | `conference`     | Direct mapping (string) |
 
 ### System Metadata
 
-| Zotero Field | Anytype Property | Transformation |
-|-------------|-----------------|---------------|
-| `key` | `zotero_key` | Zotero item key (for tracking) |
-| `dateAdded` | `zotero_date_added` | ISO timestamp |
-| `dateModified` | `zotero_date_modified` | ISO timestamp |
-| `itemType` | `zotero_item_type` | Zotero's item type identifier |
-| `collections` | `zotero_collections` | Array of collection names |
+| Zotero Field   | Anytype Property       | Transformation                 |
+| -------------- | ---------------------- | ------------------------------ |
+| `key`          | `zotero_key`           | Zotero item key (for tracking) |
+| `dateAdded`    | `zotero_date_added`    | ISO timestamp                  |
+| `dateModified` | `zotero_date_modified` | ISO timestamp                  |
+| `itemType`     | `zotero_item_type`     | Zotero's item type identifier  |
+| `collections`  | `zotero_collections`   | Array of collection names      |
 
 ## Special Cases
 
@@ -77,6 +77,7 @@ Anytero transforms Zotero bibliographic items into Anytype objects. Since Zotero
 Zotero stores creators (authors, editors, etc.) as structured objects. Anytero transforms these to text format:
 
 **Zotero Format**:
+
 ```json
 {
   "creators": [
@@ -87,6 +88,7 @@ Zotero stores creators (authors, editors, etc.) as structured objects. Anytero t
 ```
 
 **Anytype Format**:
+
 ```
 Doe, John; Smith, Jane
 ```
@@ -107,12 +109,10 @@ Zotero supports flexible date formats (e.g., "2024", "Spring 2024", "2024-03-15"
 Zotero tags are mapped to Anytype tags:
 
 **Zotero Format**:
+
 ```json
 {
-  "tags": [
-    { "tag": "machine learning" },
-    { "tag": "neural networks" }
-  ]
+  "tags": [{ "tag": "machine learning" }, { "tag": "neural networks" }]
 }
 ```
 
@@ -151,6 +151,7 @@ File attachments (PDFs, EPUBs, etc.) are handled based on configuration:
 **Note**: Bidirectional sync is planned for future releases. Current version is **Zotero → Anytype only**.
 
 When implemented, import will:
+
 1. Detect changes in Anytype objects
 2. Map Anytype properties back to Zotero fields
 3. Update Zotero items via Zotero API
@@ -173,6 +174,7 @@ properties.set('custom_field', {
 ### Property Name Conflicts
 
 If a Zotero field name conflicts with an Anytype reserved name:
+
 - Prefix is added: `zotero_[fieldname]`
 - Example: `date` (reserved) → `zotero_date`
 
@@ -189,6 +191,7 @@ If a Zotero field name conflicts with an Anytype reserved name:
 ### Future Enhancements
 
 Planned improvements:
+
 - Bidirectional sync (Anytype → Zotero)
 - Custom object types (Article, Book, etc.)
 - Full file attachment support
@@ -215,6 +218,7 @@ Planned improvements:
 ### Example 1: Journal Article
 
 **Zotero Input**:
+
 ```json
 {
   "key": "ABC123",
@@ -236,6 +240,7 @@ Planned improvements:
 ```
 
 **Anytype Output** (page object):
+
 ```json
 {
   "type_key": "page",
@@ -261,6 +266,7 @@ Planned improvements:
 ### Example 2: Book with Multiple Authors
 
 **Zotero Input**:
+
 ```json
 {
   "key": "XYZ789",
@@ -279,6 +285,7 @@ Planned improvements:
 ```
 
 **Anytype Output**:
+
 ```json
 {
   "type_key": "page",
@@ -302,6 +309,7 @@ Planned improvements:
 ### Missing Fields
 
 If some fields don't appear in Anytype:
+
 1. Check if the field is populated in Zotero
 2. Verify the field name matches a supported mapping
 3. Check if the field is a custom Zotero field (may need manual mapping)
@@ -309,6 +317,7 @@ If some fields don't appear in Anytype:
 ### Incorrect Formatting
 
 If data appears incorrectly formatted:
+
 1. Check original Zotero data for formatting issues
 2. Consider the transformation rules above
 3. Report persistent issues on GitHub
@@ -316,6 +325,7 @@ If data appears incorrectly formatted:
 ### Data Loss
 
 If data seems lost after sync:
+
 1. Verify the sync completed successfully (check progress window)
 2. Search for the item by title in Anytype
 3. Check Zotero logs for error messages

@@ -1,10 +1,9 @@
 /**
  * Anytype Sync Job
- * 
+ *
  * Orchestrates syncing of Zotero items to Anytype
  */
 
-import type { AnytypeClient } from './anytype-client';
 import { APA_STYLE } from '../constants';
 import { ItemSyncError } from '../errors';
 import {
@@ -13,11 +12,12 @@ import {
   getNoteroPref,
   getRequiredNoteroPref,
 } from '../prefs/notero-pref';
+import { ProgressWindow } from '../sync/progress-window';
 import { getLocalizedErrorMessage, logger } from '../utils';
 
-import { ProgressWindow } from '../sync/progress-window';
-import { syncRegularItem } from './sync-regular-item';
+import type { AnytypeClient } from './anytype-client';
 import { syncNoteItem } from './sync-note-item';
+import { syncRegularItem } from './sync-regular-item';
 
 export type AnytypeSyncJobParams = {
   anytypeClient: AnytypeClient;

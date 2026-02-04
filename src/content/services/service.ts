@@ -1,5 +1,5 @@
-import type { NotionAuthManager } from '../auth';
 import type { AnytypeAuthManager } from '../anytype';
+import type { NotionAuthManager } from '../auth';
 import type { PluginInfo } from '../plugin-info';
 
 import type { EventManager, PreferencePaneManager } from '.';

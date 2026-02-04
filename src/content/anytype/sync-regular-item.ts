@@ -1,8 +1,11 @@
 /**
  * Anytype Sync Regular Item
- * 
+ *
  * Handles syncing of regular Zotero items (non-notes) to Anytype
  */
+
+import { LocalizableError } from '../errors';
+import { logger } from '../utils';
 
 import type { AnytypeClient, AnytypeObject } from './anytype-client';
 import {
@@ -11,8 +14,6 @@ import {
   saveAnytypeTag,
 } from './item-data';
 import { buildAnytypeProperties } from './property-builder';
-import { LocalizableError } from '../errors';
-import { logger } from '../utils';
 
 export type SyncRegularItemParams = {
   anytypeClient: AnytypeClient;
@@ -42,8 +43,9 @@ async function saveItemToSpace(
   item: Zotero.Item,
   params: SyncRegularItemParams,
 ): Promise<AnytypeObject> {
-  const { anytypeClient, spaceId, typeKey, citationFormat, pageTitleFormat } = params;
-  
+  const { anytypeClient, spaceId, typeKey, citationFormat, pageTitleFormat } =
+    params;
+
   const objectId = getAnytypeObjectID(item);
 
   // Build properties from Zotero item
@@ -97,7 +99,10 @@ async function updateObject(
   name: string,
   properties: any[],
 ): Promise<AnytypeObject> {
-  logger.debug('Updating object', objectId, 'in space', spaceId, { name, properties });
+  logger.debug('Updating object', objectId, 'in space', spaceId, {
+    name,
+    properties,
+  });
 
   try {
     return await client.updateObject(spaceId, objectId, {
@@ -106,7 +111,7 @@ async function updateObject(
     });
   } catch (error) {
     logger.error('Failed to update Anytype object:', error);
-    
+
     // If object not found, try to create a new one
     if (isObjectNotFoundError(error)) {
       logger.debug('Object not found, creating new one');
@@ -127,8 +132,7 @@ async function updateObject(
  */
 function isObjectNotFoundError(error: unknown): boolean {
   if (error instanceof Error) {
-    return error.message.includes('not found') || 
-           error.message.includes('404');
+    return error.message.includes('not found') || error.message.includes('404');
   }
   return false;
 }

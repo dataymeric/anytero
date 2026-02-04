@@ -1,5 +1,5 @@
-import { getSyncedNotes } from '../data/item-data';
 import { performAnytypeSyncJob } from '../anytype';
+import { getSyncedNotes } from '../data/item-data';
 import { loadSyncEnabledCollectionIDs } from '../prefs/collection-sync-config';
 import { getNoteroPref, NoteroPref } from '../prefs/notero-pref';
 import { performSyncJob } from '../sync/sync-job';
@@ -27,12 +27,14 @@ export class SyncManager implements Service {
 
   public startup({
     dependencies: { eventManager, notionAuthManager, anytypeAuthManager },
-  }: ServiceParams<'eventManager' | 'notionAuthManager' | 'anytypeAuthManager'>) {
+  }: ServiceParams<
+    'eventManager' | 'notionAuthManager' | 'anytypeAuthManager'
+  >) {
     this.eventManager = eventManager;
 
     this.getNotionAuthToken =
       notionAuthManager.getRequiredAuthToken.bind(notionAuthManager);
-    
+
     this.getAnytypeClient =
       anytypeAuthManager.createClient.bind(anytypeAuthManager);
 
@@ -271,7 +273,11 @@ export class SyncManager implements Service {
     try {
       if (anytypeSpaceId) {
         // Use Anytype if space is configured
-        await performAnytypeSyncJob(itemIDs, () => this.getAnytypeClient(mainWindow), mainWindow);
+        await performAnytypeSyncJob(
+          itemIDs,
+          () => this.getAnytypeClient(mainWindow),
+          mainWindow,
+        );
       } else if (notionDatabaseId) {
         // Fall back to Notion
         await performSyncJob(itemIDs, this.getNotionAuthToken, mainWindow);

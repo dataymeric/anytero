@@ -1,6 +1,6 @@
 /**
  * Anytype Item Data
- * 
+ *
  * Manages Zotero item data related to Anytype syncing
  */
 
@@ -36,7 +36,7 @@ function getObjectIDFromURL(url: string): string | undefined {
   if (url.startsWith('anytype://')) {
     return url.replace('anytype://', '').split('/')[0];
   }
-  
+
   // Handle web URLs
   const match = url.match(/app\.any\.coop\/([^/?#]+)/);
   return match ? match[1] : undefined;

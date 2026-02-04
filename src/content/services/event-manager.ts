@@ -1,7 +1,7 @@
 import { EventEmitter } from 'eventemitter3';
 
-import type { NotionConnection } from '../auth';
 import type { AnytypeApiKey } from '../anytype';
+import type { NotionConnection } from '../auth';
 import { logger } from '../utils';
 
 import type { Service } from './service';

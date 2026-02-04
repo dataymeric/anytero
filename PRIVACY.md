@@ -13,6 +13,7 @@ to the Anytype Desktop application running on the user's local computer. This
 authentication happens entirely locally and does not involve any external servers.
 
 The authentication process works as follows:
+
 1. Anytero initiates an authentication challenge with the local Anytype API
 2. A 4-digit code is generated and displayed to the user
 3. The user enters this code in Anytype Desktop to authorize the connection

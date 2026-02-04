@@ -6,7 +6,6 @@ Before installing Anytero, make sure you have:
 
 1. **Zotero 7.0 or later** installed on your computer
    - Download from [zotero.org](https://www.zotero.org/download/)
-   
 2. **Anytype Desktop application** installed and running
    - Download from [anytype.io](https://anytype.io/)
    - The desktop app must be running for Anytero to work
@@ -59,6 +58,7 @@ To verify Anytero is working correctly:
 ## Automatic Sync
 
 Once configured, Anytero will automatically sync items to Anytype when:
+
 - You add new items to a synced collection
 - You modify items in a synced collection
 - You add attachments or notes to synced items
@@ -91,6 +91,7 @@ To remove Anytero:
 5. Restart Zotero
 
 **Note**: Uninstalling Anytero will:
+
 - Remove the extension from Zotero
 - Clear your stored API key
 - Preserve your synced items in Anytype (they will not be deleted)

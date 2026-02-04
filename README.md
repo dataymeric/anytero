@@ -157,32 +157,32 @@ automatically mapped to your selected object type in Anytype.
 
 The following Zotero fields are synced to Anytype object properties:
 
-| Zotero Field        | Anytype Property | Notes                                                                          |
-| ------------------- | ---------------- | ------------------------------------------------------------------------------ |
-| Title               | name             | Primary object name                                                            |
-| Abstract            | abstract         | Text property                                                                  |
-| Authors             | authors          | Text property with formatted author names                                      |
-| Citation Key        | citationKey      | Requires [Better BibTeX](https://retorque.re/zotero-better-bibtex/)            |
-| Collections         | collections      | Multi-select tags                                                              |
-| Date                | date             | Text property                                                                  |
-| Date Added          | dateAdded        | Date property                                                                  |
-| Date Modified       | dateModified     | Date property                                                                  |
-| DOI                 | doi              | URL property                                                                   |
-| Editors             | editors          | Text property                                                                  |
-| Extra               | extra            | Text property                                                                  |
-| File Path           | filePath         | Text property                                                                  |
-| Full Citation       | fullCitation     | Text property (format based on Zotero quick copy settings)                    |
-| In-Text Citation    | inTextCitation   | Text property (format based on Zotero quick copy settings)                    |
-| Item Type           | itemType         | Select property                                                                |
-| Place               | place            | Text property                                                                  |
-| Proceedings Title   | proceedingsTitle | Text property                                                                  |
-| Publication         | publication      | Text property                                                                  |
-| Series Title        | seriesTitle      | Text property                                                                  |
-| Short Title         | shortTitle       | Text property                                                                  |
-| Tags                | tags             | Multi-select tags                                                              |
-| URL                 | url              | URL property                                                                   |
-| Year                | year             | Number property                                                                |
-| Zotero URI          | zoteroUri        | URL property (opens items in web library if signed in to Zotero)              |
+| Zotero Field      | Anytype Property | Notes                                                               |
+| ----------------- | ---------------- | ------------------------------------------------------------------- |
+| Title             | name             | Primary object name                                                 |
+| Abstract          | abstract         | Text property                                                       |
+| Authors           | authors          | Text property with formatted author names                           |
+| Citation Key      | citationKey      | Requires [Better BibTeX](https://retorque.re/zotero-better-bibtex/) |
+| Collections       | collections      | Multi-select tags                                                   |
+| Date              | date             | Text property                                                       |
+| Date Added        | dateAdded        | Date property                                                       |
+| Date Modified     | dateModified     | Date property                                                       |
+| DOI               | doi              | URL property                                                        |
+| Editors           | editors          | Text property                                                       |
+| Extra             | extra            | Text property                                                       |
+| File Path         | filePath         | Text property                                                       |
+| Full Citation     | fullCitation     | Text property (format based on Zotero quick copy settings)          |
+| In-Text Citation  | inTextCitation   | Text property (format based on Zotero quick copy settings)          |
+| Item Type         | itemType         | Select property                                                     |
+| Place             | place            | Text property                                                       |
+| Proceedings Title | proceedingsTitle | Text property                                                       |
+| Publication       | publication      | Text property                                                       |
+| Series Title      | seriesTitle      | Text property                                                       |
+| Short Title       | shortTitle       | Text property                                                       |
+| Tags              | tags             | Multi-select tags                                                   |
+| URL               | url              | URL property                                                        |
+| Year              | year             | Number property                                                     |
+| Zotero URI        | zoteroUri        | URL property (opens items in web library if signed in to Zotero)    |
 
 ## Usage Guides
 

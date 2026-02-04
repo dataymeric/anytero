@@ -1,6 +1,6 @@
 /**
  * Anytype API Client
- * 
+ *
  * A TypeScript client for interacting with the Anytype local API.
  * Provides authentication, object creation, updates, and retrieval.
  */
@@ -122,7 +122,7 @@ export class AnytypeClient {
   /**
    * Initiate authentication challenge
    * This will display a 4-digit code in the Anytype desktop app
-   * 
+   *
    * @param appName The name of your application
    * @returns Challenge ID to be used for completing authentication
    */
@@ -146,7 +146,7 @@ export class AnytypeClient {
 
   /**
    * Complete authentication by providing the challenge ID and 4-digit code
-   * 
+   *
    * @param challengeId The challenge ID from startAuthChallenge
    * @param code The 4-digit code shown in Anytype desktop app
    * @returns API key to be used for future requests
@@ -287,10 +287,11 @@ export class AnytypeClient {
   /**
    * Search for objects across all spaces or within a specific space
    */
-  public async searchObjects(query: string, spaceId?: string): Promise<AnytypeObject[]> {
-    const endpoint = spaceId 
-      ? `/v1/spaces/${spaceId}/search`
-      : '/v1/search';
+  public async searchObjects(
+    query: string,
+    spaceId?: string,
+  ): Promise<AnytypeObject[]> {
+    const endpoint = spaceId ? `/v1/spaces/${spaceId}/search` : '/v1/search';
 
     const response = await this.request<{ objects: AnytypeObject[] }>(
       endpoint,
@@ -335,13 +336,15 @@ export class AnytypeClient {
     const { method, body, requiresAuth = true } = options;
 
     if (requiresAuth && !this.apiKey) {
-      throw new AnytypeClientError('API key not set. Please authenticate first.');
+      throw new AnytypeClientError(
+        'API key not set. Please authenticate first.',
+      );
     }
 
     const url = `${this.baseUrl}${endpoint}`;
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Anytype-Version': ANYTYPE_API_VERSION,
     };
 
@@ -376,7 +379,10 @@ export class AnytypeClient {
       }
 
       // Handle empty responses (e.g., DELETE)
-      if (response.status === 204 || response.headers.get('content-length') === '0') {
+      if (
+        response.status === 204 ||
+        response.headers.get('content-length') === '0'
+      ) {
         return undefined as T;
       }
 

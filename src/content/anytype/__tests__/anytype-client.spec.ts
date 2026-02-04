@@ -44,7 +44,10 @@ describe('AnytypeClient', () => {
         json: async () => ({ api_key: apiKey }),
       });
 
-      const result = await client.completeAuthChallenge('challenge_123', '1234');
+      const result = await client.completeAuthChallenge(
+        'challenge_123',
+        '1234',
+      );
 
       expect(result).toBe(apiKey);
       expect(client.getApiKey()).toBe(apiKey);
@@ -225,7 +228,10 @@ describe('AnytypeClient', () => {
     });
 
     it('should throw error when not authenticated', async () => {
-      const unauthClient = new AnytypeClient('http://localhost:31009', mockWindow);
+      const unauthClient = new AnytypeClient(
+        'http://localhost:31009',
+        mockWindow,
+      );
 
       await expect(unauthClient.listSpaces()).rejects.toThrow(
         'API key not set',
