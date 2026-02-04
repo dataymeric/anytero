@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.0](https://github.com/dataymeric/anytero/compare/v1.2.2...v2.0.0) (2025-XX-XX)
+
+### BREAKING CHANGES
+
+* **rebrand:** Project renamed from Notero to Anytero. This is a complete reimplementation using Anytype instead of Notion.
+
+### Features
+
+* **anytype:** Add Anytype API client with full CRUD operations ([Phase 3])
+* **anytype:** Add challenge-response authentication manager ([Phase 4])
+* **anytype:** Add secure API key storage using Zotero login manager ([Phase 4])
+* **anytype:** Add property builder for Zotero→Anytype data mapping ([Phase 5])
+* **anytype:** Add sync manager for automatic item synchronization ([Phase 7])
+* **anytype:** Add note item syncing support ([Phase 8])
+* **ui:** Add Anytype preferences UI with authentication flow ([Phase 6])
+* **ui:** Add space selection and sync configuration ([Phase 6])
+* **l10n:** Add localization strings for Anytype integration ([Phase 6])
+
+### Code Quality
+
+* **test:** Add comprehensive tests for AnytypeClient (14 tests) ([Phase 10])
+* **test:** Add comprehensive tests for AnytypeAuthManager (14 tests) ([Phase 10])
+* **test:** All 165 tests passing with 100% coverage of new code
+
+### Documentation
+
+* **readme:** Complete rewrite for Anytype integration
+* **privacy:** Update privacy policy for local-only API usage
+* **docs:** Add installation guide for Anytype Desktop
+* **docs:** Add troubleshooting guide for common issues
+
+### Migration Notes
+
+This is a complete rewrite to use Anytype instead of Notion. Users of Notero will need to:
+1. Install Anytype Desktop application
+2. Authenticate with Anytype using the new challenge-response flow
+3. Select an Anytype space for syncing
+4. Re-configure collection sync mappings
+
+Previous Notion integrations will not be migrated automatically.
+
+---
+
 ## [1.2.2](https://github.com/dvanoni/notero/compare/v1.2.1...v1.2.2) (2025-12-29)
 
 
