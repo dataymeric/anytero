@@ -1,7 +1,7 @@
 {
-  "name": "notero",
+  "name": "anytero",
   "version": "1.2.2",
-  "description": "Sync Zotero items and notes into Notion",
+  "description": "Sync Zotero items and notes into Anytype",
   "scripts": {
     "build": "node scripts/build.mts",
     "build:watch": "npm run build -- --watch",
@@ -28,16 +28,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dvanoni/notero.git"
+    "url": "https://github.com/dvanoni/anytero.git"
   },
   "author": {
     "name": "David Hoff-Vanoni",
     "email": "david@vanoni.dev"
   },
   "bugs": {
-    "url": "https://github.com/dvanoni/notero/issues"
+    "url": "https://github.com/dvanoni/anytero/issues"
   },
-  "homepage": "https://github.com/dvanoni/notero",
+  "homepage": "https://github.com/dvanoni/anytero",
   "engines": {
     "node": ">=24.3.0"
   },
@@ -46,9 +46,9 @@
       "48": "content/style/notero-48.png",
       "96": "content/style/notero-96.png"
     },
-    "id": "notero@vanoni.dev",
-    "name": "Notero",
-    "updateURL": "https://github.com/dvanoni/notero/releases/download/release/updates.json",
+    "id": "anytero@vanoni.dev",
+    "name": "Anytero",
+    "updateURL": "https://github.com/dvanoni/anytero/releases/download/release/updates.json",
     "zoteroMinVersion": "7.0",
     "zoteroMaxVersion": "8.0.*",
     "zotero6": {
@@ -57,7 +57,6 @@
     }
   },
   "dependencies": {
-    "@notionhq/client": "^4.0.1",
     "eventemitter3": "^5.0.4",
     "zod": "^4.3.6"
   },

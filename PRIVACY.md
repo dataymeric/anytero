@@ -1,46 +1,48 @@
 # Privacy Policy
 
-Last updated: January 10, 2025
+Last updated: February 4, 2026
 
-The Notero plugin primarily interacts with the user's local Zotero client and
-the Notion API. This document describes the data that the plugin accesses and
-how it is used.
+The Anytero plugin primarily interacts with the user's local Zotero client and
+the Anytype local API. This document describes the data that the plugin accesses
+and how it is used.
 
-## Notion Authorization
+## Anytype Authorization
 
-The Notero plugin uses a Notion public integration to authorize access to the
-user's selected Notion workspace(s) and database(s). For details on the
-authorization process, see the [Notion authorization guide][].
+The Anytero plugin uses a challenge-response authentication mechanism to connect
+to the Anytype Desktop application running on the user's local computer. This
+authentication happens entirely locally and does not involve any external servers.
 
-The authorization process follows the OAuth 2.0 protocol and uses a proxy
-service to keep the OAuth client secret secure. The OAuth proxy service is
-managed by the Notero developer and is [open source][notero-auth]. The proxy
-service does not store any user data other than logs of basic network request
-information (e.g., IP address and user agent) captured by the hosting provider,
-[Cloudflare][Cloudflare Trust Hub].
+The authentication process works as follows:
+1. Anytero initiates an authentication challenge with the local Anytype API
+2. A 4-digit code is generated and displayed to the user
+3. The user enters this code in Anytype Desktop to authorize the connection
+4. Upon successful verification, an API key is generated and stored securely
 
-When the user completes the Notion authorization flow, the Notero plugin
-receives a Notion access token and securely stores it using the
-[Zotero login manager][]. Data stored with the login manager is encrypted and
-stored on the user's local computer within the [Zotero profile directory][].
+The API key is securely stored using the [Zotero login manager][]. Data stored
+with the login manager is encrypted and stored on the user's local computer
+within the [Zotero profile directory][].
+
+## Local-Only Communication
+
+Unlike Notion-based solutions, Anytero communicates exclusively with the Anytype
+Desktop application running locally on the user's computer at `http://localhost:31009`.
+No data is transmitted to external servers or cloud services through Anytero.
 
 ## User Data
 
-The Notero plugin stores user-specific data, including Notion database IDs and
-page URLs, on the user's local computer within the [Zotero profile directory][].
-These values are transmitted to Notion for purposes of synchronization and are
-not transmitted anywhere else.
+The Anytero plugin stores user-specific data, including Anytype space IDs and
+object IDs, on the user's local computer within the [Zotero profile directory][].
+These values are used only for local synchronization with Anytype and are not
+transmitted anywhere else.
 
 As part of the synchronization process, user-generated Zotero item data may be
-transmitted to Notion. These may include but are not limited to notes, tags, and
-custom fields. Data saved in Notion is subject to [Notion terms and privacy][].
+synced to Anytype. These may include but are not limited to notes, tags, and
+custom fields. Data saved in Anytype is stored locally on the user's computer
+and is subject to [Anytype terms and privacy][].
 
-The Notero plugin does not communicate with any services other than Notion and
-the OAuth proxy service.
+The Anytero plugin does not communicate with any external services. All data
+remains on the user's local computer.
 
-[notero-auth]: https://github.com/dvanoni/notero-auth
-[Cloudflare Trust Hub]: https://www.cloudflare.com/trust-hub/
-[Notion authorization guide]: https://developers.notion.com/docs/authorization
-[Notion terms and privacy]: https://www.notion.so/28ffdd083dc3473e9c2da6ec011b58ac
+[Anytype terms and privacy]: https://anytype.io/privacy
 [Zotero login manager]: https://udn.realityripple.com/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsILoginManager/Using_nsILoginManager
 [Zotero profile directory]: https://www.zotero.org/support/kb/profile_directory

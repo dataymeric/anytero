@@ -1,91 +1,90 @@
-# Notero
+# Anytero
 
-[![Latest release](https://img.shields.io/github/v/release/dvanoni/notero)](https://github.com/dvanoni/notero/releases/latest)
-[![Total downloads](https://img.shields.io/github/downloads/dvanoni/notero/latest/total?sort=semver)][download]
-[![Works with Zotero](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdvanoni%2Fnotero%2Fmain%2Fpackage.json&query=%24.xpi.zoteroMinVersion&prefix=v&suffix=%2B&logo=zotero&label=Works%20with%20Zotero&color=%23CC2936)](https://www.zotero.org/)
+[![Latest release](https://img.shields.io/github/v/release/dvanoni/anytero)](https://github.com/dvanoni/anytero/releases/latest)
+[![Total downloads](https://img.shields.io/github/downloads/dvanoni/anytero/latest/total?sort=semver)][download]
+[![Works with Zotero](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdvanoni%2Fanytero%2Fmain%2Fpackage.json&query=%24.xpi.zoteroMinVersion&prefix=v&suffix=%2B&logo=zotero&label=Works%20with%20Zotero&color=%23CC2936)](https://www.zotero.org/)
 [![Buy me a coffee](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapp.buymeacoffee.com%2Fapi%2Fcreators%2Fslug%2Fdvanoni&query=%24.data.public_supporters_count&prefix=%F0%9F%92%9C%20&style=social&logo=buymeacoffee&label=Buy%20me%20a%20coffee)](https://www.buymeacoffee.com/dvanoni)
 
-Notero is a [Zotero plugin](https://www.zotero.org/support/plugins) for syncing
-items and notes into [Notion](https://www.notion.so/product). To use it:
+Anytero is a [Zotero plugin](https://www.zotero.org/support/plugins) for syncing
+items and notes into [Anytype](https://anytype.io/). To use it:
 
-1. 💾 [Install][] the Notero plugin into Zotero.
-2. 📔 [Connect][] and configure your Notion database.
+1. 💾 [Install][] the Anytero plugin into Zotero.
+2. 📔 [Connect][] and configure your Anytype workspace.
 3. 📁 Choose your Zotero collections to monitor.
 4. 📝 Add or update items in your collections.
-5. 🔄 Watch your items sync into Notion!
+5. 🔄 Watch your items sync into Anytype!
 
-[Install]: #install-and-configure-notero-plugin
-[Connect]: #connect-to-notion
+[Install]: #install-and-configure-anytero-plugin
+[Connect]: #connect-to-anytype
 
-![Notero in action](docs/notero.gif)
+![Anytero in action](docs/notero.gif)
 
 Concept by [@arhoff](https://github.com/arhoff) 👩🏻‍🔬 |
 Built with 💜 by [@dvanoni](https://github.com/dvanoni)
 
 ## Table of Contents
 
-- [Why Use Notero?](#why-use-notero)
-- [How Notero Works](#how-notero-works)
+- [Why Use Anytero?](#why-use-anytero)
+- [How Anytero Works](#how-anytero-works)
 - [Installation and Setup](#installation-and-setup)
 - [Usage Guides](#usage-guides)
 - [Frequently Asked Questions](#frequently-asked-questions)
-- [Example Notion Databases](#example-notion-databases)
 - [Development](#development)
 
-## Why Use Notero?
+## Why Use Anytero?
 
 - Integrate your reference manager, task list, reading notes, analytical tables,
   and drafts in one location.
-- Easily link to references when writing in Notion.
+- Easily link to references when writing in Anytype.
 - Create custom views to filter and sort large reference lists by project,
   tag, author, etc.
 - Backlinks make it easy to locate any of the notes and drafts that mention
   a reference.
-- Link references to entries in other databases, such as projects, tasks,
+- Link references to entries in other object types, such as projects, tasks,
   manuscripts in your publication pipeline, publishing outlets, etc.
 
-## How Notero Works
+## How Anytero Works
 
-The Notero plugin watches for Zotero items being added to or modified within
-any collections that you specify in the Notero preferences. Whenever an item
-is added or modified, Notero does a few things:
+The Anytero plugin watches for Zotero items being added to or modified within
+any collections that you specify in the Anytero preferences. Whenever an item
+is added or modified, Anytero does a few things:
 
-- Save a page with the Zotero item's properties (title, authors, etc.) into the
-  Notion database specified in Notero preferences.
-- Add a `notion` tag to the Zotero item.
-- Add an attachment to the Zotero item that links to the page in Notion.
+- Save an object with the Zotero item's properties (title, authors, etc.) into the
+  Anytype space specified in Anytero preferences.
+- Add an `anytype` tag to the Zotero item.
+- Add an attachment to the Zotero item that links to the object in Anytype.
 
-In addition to providing a convenient way to open a Notion page from Zotero,
-the link attachment also serves as a reference for Notero so that it can update
-the corresponding Notion page for a given Zotero item.
+In addition to providing a convenient way to open an Anytype object from Zotero,
+the link attachment also serves as a reference for Anytero so that it can update
+the corresponding Anytype object for a given Zotero item.
 
 ### Syncing Items
 
-By default, Notero will sync items in your monitored collections whenever they
+By default, Anytero will sync items in your monitored collections whenever they
 are modified. You can disable this functionality by unchecking the **Sync when
-items are modified** option in the Notero preferences.
+items are modified** option in the Anytero preferences.
 
 You can also sync items from the collection or item context menus (right-click):
 
 - To sync all items in a collection, open the context menu for the collection
-  and select **Sync Items to Notion**.
+  and select **Sync Items to Anytype**.
 - To sync one item or multiple items, select the item(s) in the main pane, open
-  the context menu, and select **Sync to Notion**.
+  the context menu, and select **Sync to Anytype**.
 
 > [!NOTE]
-> To prevent the "sync on modify" functionality from saving to Notion multiple
-> times, Notero does not notify Zotero when the tag and link attachment are
+> To prevent the "sync on modify" functionality from saving to Anytype multiple
+> times, Anytero does not notify Zotero when the tag and link attachment are
 > added to an item. This means they may not appear in Zotero immediately, and
 > you may need to navigate to a different item and back to make them appear.
 
 ### Syncing Notes and PDF Annotations
 
-Zotero notes associated with an item can be synced into Notion as content of the
-corresponding page for that item. As with regular items, you can manually sync
-notes using the **Sync to Notion** option in the context menu.
+Zotero notes associated with an item can be synced into Anytype as content of the
+corresponding object for that item. As with regular items, you can manually sync
+notes using the **Sync to Anytype** option in the context menu.
 
 Automatic syncing of notes can be enabled via the **Sync notes** option in the
-Notero preferences. When enabled, notes will automatically sync whenever they
+Anytero preferences. When enabled, notes will automatically sync whenever they
 are modified. Additionally, when a regular item is synced, all of its notes will
 also sync if they have not already.
 
@@ -104,15 +103,15 @@ extract them into a Zotero note:
 
 ## Installation and Setup
 
-Using Notero involves installing the plugin in Zotero and connecting it to a
-Notion database. Detailed setup instructions are below.
+Using Anytero involves installing the plugin in Zotero and connecting it to your
+Anytype workspace. Detailed setup instructions are below.
 
-### Install and Configure Notero Plugin
+### Install and Configure Anytero Plugin
 
 > [!IMPORTANT]
 >
-> - The latest release of Notero requires Zotero 7.0 or above.
-> - Support for Zotero 6.0.27 and above is available in Notero [v0.5.17][].
+> - The latest release of Anytero requires Zotero 7.0 or above.
+> - Anytero requires Anytype Desktop application to be installed and running.
 > - See the [changelog](CHANGELOG.md) for all release notes.
 
 1. [Download][] the latest release of the `.xpi` file.
@@ -125,157 +124,98 @@ Notion database. Detailed setup instructions are below.
    - dragging and dropping it into the Plugins Manager window _or_
    - selecting it using the **Install Plugin From File...** option in the
      gear menu in the top-right corner of the window
-4. Open the Notero preferences from either the **Tools → Notero Preferences...**
+4. Open the Anytero preferences from either the **Tools → Anytero Preferences...**
    menu item or the sidebar in the main Zotero preferences window.
-5. Configure the Notero preferences as desired.
+5. Configure the Anytero preferences as desired.
 
-[download]: https://download.notero.vanoni.dev
-[latest release]: https://github.com/dvanoni/notero/releases/latest
-[v0.5.17]: https://github.com/dvanoni/notero/releases/tag/v0.5.17
+[download]: https://download.anytero.vanoni.dev
+[latest release]: https://github.com/dvanoni/anytero/releases/latest
 
-### Connect to Notion
+### Connect to Anytype
 
 > [!NOTE]
 >
-> Before version 1.0.0, Notero required you to create your own Notion internal
-> integration and manually set the integration secret in the Notero preferences.
-> This is no longer necessary as Notero now uses a public integration with an
-> authentication flow provided by Notion.
->
-> If you previously set up Notero with an internal integration, you can click
-> the **Upgrade Connection** button in the Notero preferences to switch to the
-> public integration as described below. Once complete, you can delete your
-> internal integration from the [Notion integrations][] page.
+> Anytero connects to Anytype through its local API, which requires the Anytype
+> Desktop application to be installed and running on your computer.
+> Download Anytype from [anytype.io](https://anytype.io/) if you haven't already.
 
-1. Start the Notion connection process by clicking the **Connect to Notion**
-   button in the Notero preferences. This will open the Notion connection page
-   in your default web browser.
-2. On the Notion connection page, select your desired workspace from the menu
-   at the top (if you have multiple). Then, click **Next**.
-3. On the next page, choose whether you want to use a template database or
-   connect to an existing database page.
-   - If you choose to use a template, the [basic example](#basic-example)
-     database will be duplicated into your workspace.
-   - If you choose to select an existing database, you can search for and select
-     your preferred database on the next page. You can also select no database
-     and connect one later in Notion.
-4. Click **Allow access** to give Notero access to your Notion workspace and
-   database. You will then be redirected to a page that prompts you to open
-   Zotero.
-5. Click **Open Zotero** to complete the connection process in Zotero. The
-   Notero preferences should show that you are connected to your Notion
-   workspace.
-   - If Zotero does not open or successfully connect to Notion, copy the
-     connection token from the Notion connection page and paste it into the
-     **Connection Token** field in Notero preferences.
+1. Make sure Anytype Desktop is running on your computer.
+2. In the Anytero preferences, click the **Connect to Anytype** button.
+   This will initiate a challenge-response authentication flow.
+3. A 4-digit code will be displayed in the Anytero preferences.
+4. Open Anytype Desktop and enter the 4-digit code when prompted.
+5. Once authenticated, you can select your desired Anytype space from the
+   dropdown menu in Anytero preferences.
+6. Select the object type you want to use for synced items (e.g., "Book", "Article",
+   or create a custom type in Anytype).
+7. Click **Save** to complete the connection.
 
-<details>
-  <summary>Example of connecting to Notion</summary>
-  <video src="https://github.com/user-attachments/assets/6c759c9d-f032-4060-bfd0-8da285ce0c2a" />
-</details>
+### Configure Anytype Object Properties
 
-[Notion integrations]: https://www.notion.so/profile/integrations
+Anytero can sync data for the properties listed below. The properties are
+automatically mapped to your selected object type in Anytype.
 
-### Configure Notion Database
+The following Zotero fields are synced to Anytype object properties:
 
-If you choose not to use the template database during the Notion connection
-process, you will need to create your own database. See
-[examples](#example-notion-databases) below that you can duplicate into
-your workspace, or create one from scratch with properties described in the
-[database properties](#notion-database-properties) section below.
-
-To give Notero access to your database, follow these steps:
-
-1. Go to the database page in your workspace.
-2. Click on the **•••** More menu in the top-right corner of the page.
-3. Scroll down to and click **Connections**.
-4. Search for and select **Notero** in the **Search for connections...** menu.
-
-<details>
-  <summary>Example of connecting database to Notero</summary>
-  <video src="https://github.com/user-attachments/assets/c4c25fbe-4d66-4985-a23f-1972762906a7" />
-</details>
-
-#### Notion Database Properties
-
-Notero can sync data for the properties listed below. The only property required
-by Notero is one with the **Title** property type. The other properties are
-optional, so you can use only the ones that suit your needs.
-
-The **Title** property can be named something other than `Name` as long as it
-does not conflict with any of the other property names. The name and type of
-the other properties must be configured exactly as specified here. Note that
-property names are case-sensitive, so the capitalization must match exactly.
-
-Support for customizing properties is planned for the future;
-see issue [#355](https://github.com/dvanoni/notero/issues/355).
-
-| Property Name       | Property Type | Notes                                                                          |
-| ------------------- | ------------- | ------------------------------------------------------------------------------ |
-| `Name`              | Title         | Format configurable via the **Notion Page Title** option in Notero preferences |
-| `Abstract`          | Text          |                                                                                |
-| `Authors`           | Text          |                                                                                |
-| `Citation Key`      | Text          | Requires [Better BibTeX](https://retorque.re/zotero-better-bibtex/)            |
-| `Collections`       | Multi-select  |                                                                                |
-| `Date`              | Text          |                                                                                |
-| `Date Added`        | Date          |                                                                                |
-| `Date Modified`     | Date          |                                                                                |
-| `DOI`               | URL           |                                                                                |
-| `Editors`           | Text          |                                                                                |
-| `Extra`             | Text          |                                                                                |
-| `File Path`         | Text          |                                                                                |
-| `Full Citation`     | Text          | Format based on the Zotero setting for **Export → Quick Copy → Item Format**   |
-| `In-Text Citation`  | Text          | Format based on the Zotero setting for **Export → Quick Copy → Item Format**   |
-| `Item Type`         | Select        |                                                                                |
-| `Place`             | Text          |                                                                                |
-| `Proceedings Title` | Text          |                                                                                |
-| `Publication`       | Text          |                                                                                |
-| `Series Title`      | Text          |                                                                                |
-| `Short Title`       | Text          |                                                                                |
-| `Tags`              | Multi-select  |                                                                                |
-| `Title`             | Text          |                                                                                |
-| `URL`               | URL           |                                                                                |
-| `Year`              | Number        |                                                                                |
-| `Zotero URI`        | URL           | Opens items in web library if signed in to Zotero                              |
+| Zotero Field        | Anytype Property | Notes                                                                          |
+| ------------------- | ---------------- | ------------------------------------------------------------------------------ |
+| Title               | name             | Primary object name                                                            |
+| Abstract            | abstract         | Text property                                                                  |
+| Authors             | authors          | Text property with formatted author names                                      |
+| Citation Key        | citationKey      | Requires [Better BibTeX](https://retorque.re/zotero-better-bibtex/)            |
+| Collections         | collections      | Multi-select tags                                                              |
+| Date                | date             | Text property                                                                  |
+| Date Added          | dateAdded        | Date property                                                                  |
+| Date Modified       | dateModified     | Date property                                                                  |
+| DOI                 | doi              | URL property                                                                   |
+| Editors             | editors          | Text property                                                                  |
+| Extra               | extra            | Text property                                                                  |
+| File Path           | filePath         | Text property                                                                  |
+| Full Citation       | fullCitation     | Text property (format based on Zotero quick copy settings)                    |
+| In-Text Citation    | inTextCitation   | Text property (format based on Zotero quick copy settings)                    |
+| Item Type           | itemType         | Select property                                                                |
+| Place               | place            | Text property                                                                  |
+| Proceedings Title   | proceedingsTitle | Text property                                                                  |
+| Publication         | publication      | Text property                                                                  |
+| Series Title        | seriesTitle      | Text property                                                                  |
+| Short Title         | shortTitle       | Text property                                                                  |
+| Tags                | tags             | Multi-select tags                                                              |
+| URL                 | url              | URL property                                                                   |
+| Year                | year             | Number property                                                                |
+| Zotero URI          | zoteroUri        | URL property (opens items in web library if signed in to Zotero)              |
 
 ## Usage Guides
 
-For more visual guides of setting up and using Notero, see the following
+For more visual guides of setting up and using Anytero, see the following
 resources made by wonderful members of the community.
 
 > [!NOTE]
 > Some aspects of these resources may be outdated, so be sure to refer to this
 > README for the latest information.
 
-- [Using Notion and Zotero to build a literature tracker](https://sciquest.netlify.app/posts/notion_literature/)
-  (blog post) by [Jewel Johnson](https://jeweljohnsonj.github.io/jewel_resume/)
-- [How To Sync Zotero → Notion // Research Paper Workflow (2023 Tutorial)](https://youtu.be/8RFFxFcrLCo)
-  (video) by [Holly Jane](https://hollyjane.org/)
-- [Smart notetaking by starting with integrating Zotero and Notion: A first step](https://youtu.be/4Z_5tskdNsY?t=1173)
-  (video) by [Dr. Jingjing Lin](https://jingjing-lin.com/)
+- More community guides coming soon!
 
-_If you'd like to share how you use Notero and want to be listed here, please
+_If you'd like to share how you use Anytero and want to be listed here, please
 feel free to submit a PR or [contact me](https://github.com/dvanoni)!_
 
 ## Frequently Asked Questions
 
-### How to sync from Notion back into Zotero
+### How to sync from Anytype back into Zotero
 
-Bidirectional sync between Notion and Zotero, while desirable, falls outside the
-scope of this plugin. Implementing this functionality would require developing a
-separate hosted service that could both listen for
-[Notion webhooks](https://developers.notion.com/reference/webhooks) and interact
-with the Zotero API to propagate changes. While technically feasible as a
-standalone project, this capability is not part of Notero's functionality.
+Bidirectional sync between Anytype and Zotero, while desirable, falls outside the
+scope of this plugin. Implementing this functionality would require developing
+complex synchronization logic to detect and propagate changes in both directions.
+While technically feasible as a future enhancement, this capability is not part
+of Anytero's current functionality.
 
-### How to sync attached files into Notion
+### How to sync attached files into Anytype
 
-There currently isn't a good way to sync files or link to local files due to the
-following limitations with Notion:
+Currently, Anytero syncs metadata and notes but not file attachments. This is due
+to limitations in how both Zotero and Anytype handle file storage:
 
-- The Notion API [does not currently support uploading files](https://developers.notion.com/reference/file-object#externally-hosted-files-vs-files-hosted-by-notion).
-- Notion only supports `http:` and `https:` URLs, so it's not possible to link
-  directly to the file using a `file:` URL.
+- The Anytype API focuses on object properties and content blocks rather than
+  large file attachments.
+- Local file paths may not be accessible from different devices.
 
 For now, the best workarounds are:
 
@@ -289,109 +229,59 @@ To sync multiple items that are already in a monitored collection, you can do so
 from the collection or item context menus.
 See the [Syncing Items](#syncing-items) section above.
 
-### How to fix Notion API errors
+### How to fix Anytype API errors
 
-#### Could not find database
+#### Could not connect to Anytype
 
-If you receive the following error:
+If you receive connection errors when trying to sync:
 
-> APIResponseError: Could not find database with ID: _xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx_
+> Error: Could not connect to Anytype API
 
-This most likely means you have not given Notero access to your Notion database.
-Ensure you follow the steps in the
-[Configure Notion Database](#configure-notion-database) section. Clicking the
-**•••** button in the top-right corner of your database should show a connection
-for the Notero integration.
+This most likely means the Anytype Desktop application is not running. Make sure:
 
-#### Can't update a page that is archived
+- Anytype Desktop is installed and running on your computer
+- The Anytype local API is accessible at `http://localhost:31009`
+- No firewall or security software is blocking local connections
 
-If you receive the following error:
+#### Authentication failed
 
-> APIResponseError: Can't update a page that is archived. You must unarchive the
-> page before updating.
+If you receive authentication errors:
 
-This can happen when Notero tries to sync an item that already had a Notion page
-created for it from a previous sync, but that page has since been deleted.
-(Note that deleting a Notion page moves it into the trash, and the Notion API
-refers to this as "archived.")
+> Error: Authentication failed or API key is invalid
 
-As described in the [How Notero Works](#how-notero-works) section, Notero
-associates Zotero items with Notion pages through a link named `Notion` attached
-to the item. To resolve the issue, delete this link attachment on the offending
-item(s) and then perform the sync again.
+You may need to re-authenticate:
 
-#### Not a property that exists
+1. Open Anytero preferences in Zotero
+2. Click **Disconnect from Anytype**
+3. Click **Connect to Anytype** and complete the authentication flow again
 
-If you receive the following error:
+#### Space not found
 
-> APIResponseError: _property_ is not a property that exists
+If you receive errors about the space not being found:
 
-This can happen if you previously synced items into one Notion database and then
-change your Notero preferences to specify a different database. Notero may be
-trying to update pages in the old database instead of creating pages in the new
-database, and this error can occur if different properties were configured in
-the different databases.
+> Error: Could not find space with ID: _xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx_
 
-To solve this, you should delete the old database in Notion and then permanently
-delete it from the Trash in Notion.
+This can happen if you've deleted or recreated a space in Anytype. To resolve:
 
-## Example Notion Databases
-
-We provide some example Notion databases that have been configured with all the
-properties synced by Notero.
-
-Once you've opened one of the examples, click the **Duplicate** button in the
-top-right corner of the page to duplicate it into your Notion workspace.
-
-### [Basic Example](https://dvanoni.notion.site/25128626a44f80f79295d1dec1ab5910)
-
-An empty database that contains only the properties synced by Notero.
-Useful if you want to start from scratch and customize it yourself.
-
-### [Advanced Example](https://dvanoni.notion.site/24d28626a44f800ea459dcce841443ff)
-
-A database with multiple views and some sample entries.
-See below for descriptions of how you can use the different views.
-
-#### Bibliographic Info Table View
-
-- Table view enables easy editing of entries.
-- Easily navigate to the original source by clicking on the `DOI` or `URL` property.
-  - DOIs for books may need to be copy & pasted manually from the `Extra`
-    field in Zotero.
-- Click on the `Zotero URI` property to view/edit the entry in Zotero or to
-  export the bibliography entry in a different citation style.
-
-#### Reading Status Board View
-
-- Keep track of promising references you need to locate, books and articles you
-  requested via interlibrary loan, and works that are relevant enough to warrant
-  taking in-depth notes or writing a memo.
-
-#### Literature Review Table View
-
-- Quickly analyze and compare attributes of literature you are reviewing
-  (e.g., theoretical framework, sample, methods used, key findings, etc.)
-- Easily link to other works using the `Related References` property
-  (e.g., articles in the same special issue, book chapters in the same edited
-  book, studies and commentary that respond to or extend other works).
-
-#### Books Gallery View
-
-- Add a cover image (e.g., right click → copy image address from Amazon).
-- Keep track of which books you own, borrow, and lend to others.
-  - Add due dates and reminders for library books and interlibrary loans.
+1. Open Anytero preferences
+2. Select the correct space from the dropdown menu
+3. Click **Save** and try syncing again
 
 ## Development
 
-Notero was scaffolded with [generator-zotero-plugin][] and uses build scripts
+Anytero was scaffolded with [generator-zotero-plugin][] and uses build scripts
 heavily inspired by [zotero-plugin][].
 Many thanks to [@retorquere](https://github.com/retorquere) for creating these.
+
+Anytero is a fork of [Notero][] adapted to work with Anytype instead of Notion.
+Many thanks to [@dvanoni](https://github.com/dvanoni) for the original Notero plugin.
+
+[Notero]: https://github.com/dvanoni/notero
 
 ### Local Setup
 
 The steps below are based on the [Zotero Plugin Development][plugin-development]
-documentation and should allow you to build and run Notero yourself.
+documentation and should allow you to build and run Anytero yourself.
 
 1.  To avoid any potential damage to your default Zotero profile, you can
     [create a new profile][zotero-profiles] for development purposes.
@@ -405,7 +295,7 @@ documentation and should allow you to build and run Notero yourself.
 
         npm ci
 
-4.  Build Notero and start Zotero with the plugin installed:
+4.  Build Anytero and start Zotero with the plugin installed:
 
         npm start
 
@@ -448,4 +338,4 @@ builds the `.xpi` file and publishes it to the release. It also generates an
 updated manifest file and publishes it to the [`release`][release-tag] release.
 
 [release-please]: https://github.com/googleapis/release-please-action
-[release-tag]: https://github.com/dvanoni/notero/releases/tag/release
+[release-tag]: https://github.com/dvanoni/anytero/releases/tag/release
