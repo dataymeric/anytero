@@ -312,10 +312,17 @@ export class AnytypeClient {
       // Extract unique types
       for (const obj of objects) {
         if (obj.type_key && !typeMap.has(obj.type_key)) {
+          // Format the name by replacing underscores/hyphens with spaces and capitalizing
+          const formattedName = obj.type_key
+            .replace(/[-_]/g, ' ')
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+          
           typeMap.set(obj.type_key, {
             id: obj.type_key,
             key: obj.type_key,
-            name: obj.type_key.charAt(0).toUpperCase() + obj.type_key.slice(1),
+            name: formattedName,
           });
         }
       }
@@ -380,13 +387,18 @@ export class AnytypeClient {
       },
     );
 
+    logger.debug('Create object response:', response);
+
     // Handle wrapped response format
     if (response && typeof response === 'object' && 'object' in response && response.object) {
+      logger.debug('Returning wrapped object with id:', response.object.id);
       return response.object;
     }
 
     // Handle direct object response
-    return response as AnytypeObject;
+    const directResponse = response as AnytypeObject;
+    logger.debug('Returning direct object with id:', directResponse.id);
+    return directResponse;
   }
 
   /**
