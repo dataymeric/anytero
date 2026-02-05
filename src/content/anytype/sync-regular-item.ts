@@ -10,6 +10,7 @@ import { logger } from '../utils';
 
 import type { AnytypeClient, AnytypeObject, AnytypeProperty } from './anytype-client';
 import {
+  getAnytypeLinkAttachment,
   getAnytypeObjectID,
   saveAnytypeLinkAttachment,
   saveAnytypeTag,
@@ -58,7 +59,7 @@ async function saveItemToSpace(
   });
 
   if (objectId) {
-    return updateObject(anytypeClient, spaceId, objectId, name, body, properties);
+    return updateObject(anytypeClient, spaceId, typeKey, objectId, name, body, properties, item);
   }
 
   return createObject(anytypeClient, spaceId, typeKey, name, body, properties);
@@ -75,7 +76,12 @@ async function createObject(
   body: string,
   properties: AnytypeProperty[],
 ): Promise<AnytypeObject> {
-  logger.debug('Creating object in space', spaceId, { name, body: body.substring(0, 100) + '...', properties });
+  logger.debug('Creating object in space', spaceId, { 
+    typeKey, 
+    name, 
+    body: body.substring(0, 100) + '...', 
+    properties 
+  });
 
   try {
     return await client.createObject(spaceId, {
@@ -83,9 +89,14 @@ async function createObject(
       name,
       body,
       properties,
+      icon: {
+        emoji: '📕',
+        format: 'emoji',
+      },
     });
   } catch (error) {
     logger.error('Failed to create Anytype object:', error);
+    logger.error('Type key used:', typeKey);
     throw new LocalizableError(
       'Failed to create Anytype object',
       'notero-error-anytype-create-failed',
@@ -99,10 +110,12 @@ async function createObject(
 async function updateObject(
   client: AnytypeClient,
   spaceId: string,
+  typeKey: string,
   objectId: string,
   name: string,
   body: string,
   properties: AnytypeProperty[],
+  item: Zotero.Item,
 ): Promise<AnytypeObject> {
   logger.debug('Updating object', objectId, 'in space', spaceId, {
     name,
@@ -119,11 +132,16 @@ async function updateObject(
   } catch (error) {
     logger.error('Failed to update Anytype object:', error);
 
-    // If object not found, try to create a new one
+    // If object not found, remove the invalid attachment and create a new one
     if (isObjectNotFoundError(error)) {
-      logger.debug('Object not found, creating new one');
-      // Extract type_key from error or use default
-      const typeKey = 'page'; // Default type
+      logger.debug('Object not found or inaccessible, removing invalid attachment and creating new one');
+      
+      // Remove the invalid attachment
+      const attachment = getAnytypeLinkAttachment(item);
+      if (attachment) {
+        await Zotero.Items.erase([attachment.id]);
+      }
+      
       return createObject(client, spaceId, typeKey, name, body, properties);
     }
 
@@ -139,7 +157,11 @@ async function updateObject(
  */
 function isObjectNotFoundError(error: unknown): boolean {
   if (error instanceof Error) {
-    return error.message.includes('not found') || error.message.includes('404');
+    return (
+      error.message.includes('not found') ||
+      error.message.includes('404') ||
+      error.message.includes('failed to retrieve object')
+    );
   }
   return false;
 }
