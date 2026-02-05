@@ -34,7 +34,11 @@ function isAnytypeURL(value: unknown): value is string {
 function getObjectIDFromURL(url: string): string | undefined {
   // Handle anytype:// protocol
   if (url.startsWith('anytype://')) {
-    return url.replace('anytype://', '').split('/')[0];
+    // Remove protocol and extract just the object ID (before ? or /)
+    const withoutProtocol = url.replace('anytype://', '');
+    const objectId = withoutProtocol.split(/[/?]/)[0];
+    // Return undefined if objectId is literally the string "undefined"
+    return objectId === 'undefined' ? undefined : objectId;
   }
 
   // Handle web URLs
