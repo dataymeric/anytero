@@ -10,6 +10,7 @@ import { PageTitleFormat } from '../prefs/notero-pref';
 import {
   buildCollectionFullName,
   getItemURL,
+  logger,
   parseItemDate,
   truncateMiddle,
 } from '../utils';
@@ -31,6 +32,7 @@ export async function buildAnytypeProperties(
   params: PropertyBuilderParams,
 ): Promise<{
   name: string;
+  body: string;
   properties: AnytypeProperty[];
 }> {
   const propertyBuilder = new AnytypePropertyBuilder(params);
@@ -63,19 +65,115 @@ class AnytypePropertyBuilder {
 
   public async buildProperties(): Promise<{
     name: string;
+    body: string;
     properties: AnytypeProperty[];
   }> {
     const name = await this.getPageTitle();
+    const body = await this.buildBody();
+    
+    // Build properties from definitions
     const properties: AnytypeProperty[] = [];
-
+    
     for (const definition of this.propertyDefinitions) {
-      const property = await definition.buildValue();
-      if (property !== null) {
-        properties.push(property);
+      try {
+        const value = await definition.buildValue();
+        if (value) {
+          properties.push(value);
+        }
+      } catch (error) {
+        logger.warn(`Failed to build property ${definition.key}:`, error);
       }
     }
 
-    return { name, properties };
+    logger.debug('Built', properties.length, 'properties for item');
+
+    return { name, body, properties };
+  }
+
+  /**
+   * Build formatted body content with all bibliographic data
+   */
+  private async buildBody(): Promise<string> {
+    const sections: string[] = [];
+
+    // Title
+    const title = this.getTitle();
+    if (title) {
+      sections.push(`# ${title}\n`);
+    }
+
+    // Authors
+    const primaryCreatorTypeID = Zotero.CreatorTypes.getPrimaryIDForType(
+      this.item.itemTypeID,
+    );
+    if (primaryCreatorTypeID) {
+      const authors = this.item
+        .getCreators()
+        .filter(({ creatorTypeID }) => creatorTypeID === primaryCreatorTypeID)
+        .map(formatCreatorName)
+        .join('; ');
+      if (authors) {
+        sections.push(`**Authors:** ${authors}\n`);
+      }
+    }
+
+    // Publication info
+    const publicationTitle = this.item.getField('publicationTitle');
+    if (publicationTitle) {
+      sections.push(`**Publication:** ${publicationTitle}\n`);
+    }
+
+    const date = this.item.getField('date');
+    if (date) {
+      sections.push(`**Date:** ${date}\n`);
+    }
+
+    // DOI
+    const doi = this.item.getField('DOI');
+    if (doi) {
+      sections.push(`**DOI:** ${doi}\n`);
+    }
+
+    // URL
+    const url = getItemURL(this.item);
+    if (url) {
+      sections.push(`**URL:** ${url}\n`);
+    }
+
+    // Collections
+    const collections = Zotero.Collections.get(
+      this.item.getCollections(),
+    ).map((collection) => buildCollectionFullName(collection));
+    if (collections.length > 0) {
+      sections.push(`\n**Collections:** ${collections.join(', ')}\n`);
+    }
+
+    // Tags (excluding special tags)
+    const tags = this.item
+      .getTags()
+      .map((t) => t.tag)
+      .filter((tag) => tag !== ANYTYPE_TAG_NAME && tag !== NOTION_TAG_NAME);
+    if (tags.length > 0) {
+      sections.push(`\n**Tags:** ${tags.join(', ')}\n`);
+    }
+
+    // Item Type
+    const itemType = Zotero.ItemTypes.getLocalizedString(this.item.itemTypeID);
+    sections.push(`\n**Type:** ${itemType}\n`);
+
+    // Citation Key (if available)
+    const citationKey = this.getCitationKey();
+    if (citationKey) {
+      sections.push(`**Citation Key:** ${citationKey}\n`);
+    }
+
+    // Abstract
+    const abstract = this.item.getField('abstractNote');
+    if (abstract) {
+      sections.push(`\n## Abstract\n\n${abstract}\n`);
+    }
+
+    return sections.join('\n');
   }
 
   private pageTitleBuilders: Record<
@@ -166,13 +264,12 @@ class AnytypePropertyBuilder {
 
   private propertyDefinitions: PropertyDefinition[] = [
     {
-      key: 'abstract',
+      key: 'title',
       buildValue: () => {
-        const abstract = this.item.getField('abstractNote');
-        if (!abstract) return null;
+        const title = this.getTitle();
         return {
-          key: 'abstract',
-          text: sanitizeText(abstract, 2000),
+          key: 'title',
+          text: title,
         };
       },
     },
@@ -199,142 +296,13 @@ class AnytypePropertyBuilder {
       },
     },
     {
-      key: 'citation_key',
+      key: 'year',
       buildValue: () => {
-        const citationKey = this.getCitationKey();
-        if (!citationKey) return null;
+        const year = Number.parseInt(this.item.getField('year') || '');
+        if (Number.isNaN(year)) return null;
         return {
-          key: 'citation_key',
-          text: citationKey,
-        };
-      },
-    },
-    {
-      key: 'collections',
-      buildValue: () => {
-        const collections = Zotero.Collections.get(
-          this.item.getCollections(),
-        ).map((collection) =>
-          sanitizeText(buildCollectionFullName(collection), 100),
-        );
-
-        if (collections.length === 0) return null;
-
-        return {
-          key: 'collections',
-          multi_select: collections,
-        };
-      },
-    },
-    {
-      key: 'date',
-      buildValue: () => {
-        const date = this.item.getField('date');
-        if (!date) return null;
-        return {
-          key: 'date',
-          text: date,
-        };
-      },
-    },
-    {
-      key: 'date_added',
-      buildValue: () => {
-        const dateAdded = parseItemDate(this.item.dateAdded);
-        if (!dateAdded) return null;
-        return {
-          key: 'date_added',
-          date: dateAdded.toISOString(),
-        };
-      },
-    },
-    {
-      key: 'date_modified',
-      buildValue: () => {
-        const dateModified = parseItemDate(this.item.dateModified);
-        if (!dateModified) return null;
-        return {
-          key: 'date_modified',
-          date: dateModified.toISOString(),
-        };
-      },
-    },
-    {
-      key: 'doi',
-      buildValue: () => {
-        const doi = this.item.getField('DOI');
-        if (!doi) return null;
-        return {
-          key: 'doi',
-          url: `https://doi.org/${doi}`,
-        };
-      },
-    },
-    {
-      key: 'editors',
-      buildValue: () => {
-        const editorTypeID = Zotero.CreatorTypes.getID('editor');
-        if (!editorTypeID) return null;
-
-        const editors = this.item
-          .getCreators()
-          .filter(({ creatorTypeID }) => creatorTypeID === editorTypeID)
-          .map(formatCreatorName)
-          .join(', ');
-
-        if (!editors) return null;
-
-        return {
-          key: 'editors',
-          text: sanitizeText(editors, 1000),
-        };
-      },
-    },
-    {
-      key: 'extra',
-      buildValue: () => {
-        const extra = this.item.getField('extra');
-        if (!extra) return null;
-        return {
-          key: 'extra',
-          text: sanitizeText(extra, 2000),
-        };
-      },
-    },
-    {
-      key: 'file_path',
-      buildValue: async () => {
-        const attachment = await this.item.getBestAttachment();
-        if (!attachment) return null;
-
-        const path = await attachment.getFilePathAsync();
-        if (!path) return null;
-
-        return {
-          key: 'file_path',
-          text: path,
-        };
-      },
-    },
-    {
-      key: 'full_citation',
-      buildValue: async () => {
-        const citation = await this.getFullCitation();
-        if (!citation) return null;
-        return {
-          key: 'full_citation',
-          text: sanitizeText(citation, 1000),
-        };
-      },
-    },
-    {
-      key: 'in_text_citation',
-      buildValue: async () => {
-        const citation = await this.getInTextCitation();
-        if (!citation) return null;
-        return {
-          key: 'in_text_citation',
-          text: sanitizeText(citation, 500),
+          key: 'year',
+          number: year,
         };
       },
     },
@@ -352,28 +320,6 @@ class AnytypePropertyBuilder {
       },
     },
     {
-      key: 'place',
-      buildValue: () => {
-        const place = this.item.getField('place');
-        if (!place) return null;
-        return {
-          key: 'place',
-          text: sanitizeText(place, 200),
-        };
-      },
-    },
-    {
-      key: 'proceedings_title',
-      buildValue: () => {
-        const title = this.item.getField('proceedingsTitle');
-        if (!title) return null;
-        return {
-          key: 'proceedings_title',
-          text: sanitizeText(title, 500),
-        };
-      },
-    },
-    {
       key: 'publication',
       buildValue: () => {
         const publication = this.item.getField('publicationTitle');
@@ -385,52 +331,35 @@ class AnytypePropertyBuilder {
       },
     },
     {
-      key: 'series_title',
+      key: 'doi',
       buildValue: () => {
-        const title = this.item.getField('seriesTitle');
-        if (!title) return null;
+        const doi = this.item.getField('DOI');
+        if (!doi) return null;
         return {
-          key: 'series_title',
-          text: sanitizeText(title, 500),
+          key: 'doi',
+          url: `https://doi.org/${doi}`,
         };
       },
     },
     {
-      key: 'short_title',
+      key: 'isbn',
       buildValue: () => {
-        const title = this.getShortTitle();
-        if (!title) return null;
+        const isbn = this.item.getField('ISBN');
+        if (!isbn) return null;
         return {
-          key: 'short_title',
-          text: sanitizeText(title, 500),
+          key: 'isbn',
+          text: isbn,
         };
       },
     },
     {
-      key: 'tags',
+      key: 'issn',
       buildValue: () => {
-        const tags = this.item
-          .getTags()
-          .filter(
-            ({ tag }) => tag !== NOTION_TAG_NAME && tag !== ANYTYPE_TAG_NAME,
-          )
-          .map(({ tag }) => sanitizeText(tag, 50));
-
-        if (tags.length === 0) return null;
-
+        const issn = this.item.getField('ISSN');
+        if (!issn) return null;
         return {
-          key: 'tags',
-          multi_select: tags,
-        };
-      },
-    },
-    {
-      key: 'title',
-      buildValue: () => {
-        const title = this.getTitle();
-        return {
-          key: 'title',
-          text: title,
+          key: 'issn',
+          text: issn,
         };
       },
     },
@@ -442,27 +371,6 @@ class AnytypePropertyBuilder {
         return {
           key: 'url',
           url,
-        };
-      },
-    },
-    {
-      key: 'year',
-      buildValue: () => {
-        const year = Number.parseInt(this.item.getField('year') || '');
-        if (Number.isNaN(year)) return null;
-        return {
-          key: 'year',
-          number: year,
-        };
-      },
-    },
-    {
-      key: 'zotero_uri',
-      buildValue: () => {
-        const uri = getItemURL(this.item);
-        return {
-          key: 'zotero_uri',
-          url: uri,
         };
       },
     },

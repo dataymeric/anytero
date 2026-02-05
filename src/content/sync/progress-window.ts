@@ -9,12 +9,15 @@ export class ProgressWindow {
   public constructor(itemCount: number, window: Window) {
     this.itemCount = itemCount;
     this.l10n = window.document.l10n;
-    this.progressWindow = new Zotero.ProgressWindow({ window });
+    this.progressWindow = new Zotero.ProgressWindow({ 
+      closeOnClick: false,
+      window 
+    });
   }
 
   public async show() {
     const headline = await this.l10n.formatValue('notero-progress-headline');
-    this.progressWindow.changeHeadline(headline || 'Syncing items to Notion…');
+    this.progressWindow.changeHeadline(headline || 'Syncing items to Anytype…');
     this.progressWindow.show();
     this.itemProgress = new this.progressWindow.ItemProgress('document', '');
   }
@@ -33,7 +36,7 @@ export class ProgressWindow {
   }
 
   public complete() {
-    this.progressWindow.startCloseTimer();
+    this.progressWindow.startCloseTimer(1000, false); // 1 second, no mouseover required
   }
 
   public fail(errorMessage: string, failedItem?: Zotero.Item) {
@@ -49,5 +52,8 @@ export class ProgressWindow {
       this.itemProgress.setText(errorMessage);
       this.progressWindow.addDescription(''); // Hack to force window resize
     }
+    
+    // Auto-close after showing the error
+    this.progressWindow.startCloseTimer(5000); // 5 seconds to read the error
   }
 }

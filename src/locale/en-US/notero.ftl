@@ -1,11 +1,11 @@
 ## Menus
 
 notero-collection-menu-sync =
-    .label = Sync Items to Notion
+    .label = Sync Items to Anytype
 notero-item-menu-sync =
-    .label = Sync to Notion
+    .label = Sync to Anytype
 notero-tools-menu-preferences =
-    .label = Notero Preferences…
+    .label = Anytero Preferences…
 
 ## Notion preferences
 
@@ -85,6 +85,7 @@ notero-error-anytype-auth-start-failed = Failed to start Anytype authentication.
 notero-error-anytype-no-auth-session = No active Anytype authentication session. Please try connecting again.
 notero-error-anytype-auth-complete-failed = Failed to complete Anytype authentication. Please check your code and try again.
 notero-error-anytype-create-failed = Failed to create Anytype object. Please check your connection and try again.
+notero-error-anytype-create-collection-failed = Failed to create library collection in Anytype. Please check your connection and try again.
 notero-error-anytype-update-failed = Failed to update Anytype object. Please check your connection and try again.
 notero-error-missing-pref = Missing value for { $pref }. Please enter it in Notero preferences.
 notero-error-no-notion-databases = No Notion databases are accessible.

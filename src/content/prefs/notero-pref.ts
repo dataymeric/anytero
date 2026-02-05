@@ -3,6 +3,7 @@ import { MissingPrefError } from '../errors';
 
 export enum NoteroPref {
   anytypeApiKey = 'anytypeApiKey',
+  anytypeLibraryCollectionId = 'anytypeLibraryCollectionId',
   anytypeSpaceId = 'anytypeSpaceId',
   anytypeTypeKey = 'anytypeTypeKey',
   collectionSyncConfigs = 'collectionSyncConfigs',
@@ -40,6 +41,7 @@ export const PAGE_TITLE_FORMAT_L10N_IDS: Record<
 
 type NoteroPrefValue = Partial<{
   [NoteroPref.anytypeApiKey]: string;
+  [NoteroPref.anytypeLibraryCollectionId]: string;
   [NoteroPref.anytypeSpaceId]: string;
   [NoteroPref.anytypeTypeKey]: string;
   [NoteroPref.collectionSyncConfigs]: string;
@@ -90,6 +92,7 @@ function convertRawPrefValue<P extends NoteroPref>(
 
   return {
     [NoteroPref.anytypeApiKey]: stringPref,
+    [NoteroPref.anytypeLibraryCollectionId]: stringPref,
     [NoteroPref.anytypeSpaceId]: stringPref,
     [NoteroPref.anytypeTypeKey]: stringPref,
     [NoteroPref.collectionSyncConfigs]: stringPref,

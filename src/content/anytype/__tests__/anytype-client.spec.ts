@@ -204,16 +204,24 @@ describe('AnytypeClient', () => {
   });
 
   describe('health check', () => {
-    it('should return true when API is available', async () => {
-      mockFetch.mockResolvedValueOnce({ ok: true });
+    it('should return true when API returns 200 OK', async () => {
+      mockFetch.mockResolvedValueOnce({ ok: true, status: 200 });
 
       const result = await client.checkHealth();
 
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:31009/health',
+        'http://localhost:31009/v1/spaces',
         expect.any(Object),
       );
+    });
+
+    it('should return true when API returns 401 Unauthorized', async () => {
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 401 });
+
+      const result = await client.checkHealth();
+
+      expect(result).toBe(true);
     });
 
     it('should return false when API is not available', async () => {

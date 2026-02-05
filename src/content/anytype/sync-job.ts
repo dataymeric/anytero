@@ -22,6 +22,7 @@ import { syncRegularItem } from './sync-regular-item';
 export type AnytypeSyncJobParams = {
   anytypeClient: AnytypeClient;
   citationFormat: string;
+  libraryCollectionId: string;
   pageTitleFormat: PageTitleFormat;
   spaceId: string;
   typeKey: string;
@@ -66,9 +67,13 @@ async function prepareSyncJob(
     throw new Error('Anytype client is not authenticated');
   }
 
+  // Note: We're not creating a library collection anymore
+  // Items will be created directly in the space
+
   return {
     anytypeClient,
     citationFormat,
+    libraryCollectionId: '', // Empty string - not using library collection
     pageTitleFormat,
     spaceId,
     typeKey,
@@ -124,6 +129,11 @@ async function syncItems(
     }
 
     progressWindow.updateProgress(step);
+    
+    // Add delay between items to avoid rate limiting (except for the last item)
+    if (step < items.length) {
+      await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
+    }
   }
 
   progressWindow.complete();

@@ -15,12 +15,17 @@ export type {
   AnytypeAuthResponse,
   AnytypeIcon,
   AnytypeObject,
+  AnytypeObjectType,
   AnytypeProperty,
   AnytypeSpace,
   CreateObjectParams,
   UpdateObjectParams,
 } from './anytype-client';
 export { buildAnytypeProperties } from './property-builder';
+export {
+  getOrCreateLibraryCollection,
+  clearLibraryCollectionId,
+} from './library-collection';
 export { getAllApiKeys, removeApiKey, saveApiKey } from './storage';
 export type { AnytypeApiKey } from './storage';
 export { performAnytypeSyncJob } from './sync-job';

@@ -19,6 +19,7 @@ import { buildAnytypeProperties } from './property-builder';
 export type SyncRegularItemParams = {
   anytypeClient: AnytypeClient;
   citationFormat: string;
+  libraryCollectionId: string;
   pageTitleFormat: PageTitleFormat;
   spaceId: string;
   typeKey: string;
@@ -49,18 +50,18 @@ async function saveItemToSpace(
 
   const objectId = getAnytypeObjectID(item);
 
-  // Build properties from Zotero item
-  const { name, properties } = await buildAnytypeProperties({
+  // Build properties and body from Zotero item
+  const { name, body, properties } = await buildAnytypeProperties({
     item,
     citationFormat,
     pageTitleFormat,
   });
 
   if (objectId) {
-    return updateObject(anytypeClient, spaceId, objectId, name, properties);
+    return updateObject(anytypeClient, spaceId, objectId, name, body, properties);
   }
 
-  return createObject(anytypeClient, spaceId, typeKey, name, properties);
+  return createObject(anytypeClient, spaceId, typeKey, name, body, properties);
 }
 
 /**
@@ -71,14 +72,16 @@ async function createObject(
   spaceId: string,
   typeKey: string,
   name: string,
+  body: string,
   properties: AnytypeProperty[],
 ): Promise<AnytypeObject> {
-  logger.debug('Creating object in space', spaceId, { name, properties });
+  logger.debug('Creating object in space', spaceId, { name, body: body.substring(0, 100) + '...', properties });
 
   try {
     return await client.createObject(spaceId, {
       type_key: typeKey,
       name,
+      body,
       properties,
     });
   } catch (error) {
@@ -98,16 +101,19 @@ async function updateObject(
   spaceId: string,
   objectId: string,
   name: string,
+  body: string,
   properties: AnytypeProperty[],
 ): Promise<AnytypeObject> {
   logger.debug('Updating object', objectId, 'in space', spaceId, {
     name,
+    body: body.substring(0, 100) + '...',
     properties,
   });
 
   try {
     return await client.updateObject(spaceId, objectId, {
       name,
+      body,
       properties,
     });
   } catch (error) {
@@ -118,7 +124,7 @@ async function updateObject(
       logger.debug('Object not found, creating new one');
       // Extract type_key from error or use default
       const typeKey = 'page'; // Default type
-      return createObject(client, spaceId, typeKey, name, properties);
+      return createObject(client, spaceId, typeKey, name, body, properties);
     }
 
     throw new LocalizableError(

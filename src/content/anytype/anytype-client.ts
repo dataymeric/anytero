@@ -77,6 +77,19 @@ export interface AnytypeSpace {
   last_modified_date?: string;
 }
 
+export interface AnytypeObjectType {
+  id: string;
+  key: string;
+  name: string;
+  description?: string;
+  icon?: AnytypeIcon;
+  properties?: {
+    key: string;
+    name: string;
+    type: string;
+  }[];
+}
+
 export class AnytypeClientError extends Error {
   constructor(
     message: string,
@@ -178,14 +191,45 @@ export class AnytypeClient {
    * List all available spaces
    */
   public async listSpaces(): Promise<AnytypeSpace[]> {
-    const response = await this.request<{ spaces: AnytypeSpace[] }>(
-      '/v1/spaces',
-      {
-        method: 'GET',
-      },
-    );
+    const response = await this.request<
+      | { data?: AnytypeSpace[]; pagination?: unknown }
+      | { spaces?: AnytypeSpace[] }
+      | AnytypeSpace[]
+    >('/v1/spaces', {
+      method: 'GET',
+    });
 
-    return response.spaces;
+    logger.debug('listSpaces response:', response);
+
+    // Check if response is an array (some APIs return arrays directly)
+    if (Array.isArray(response)) {
+      logger.debug('Response is a direct array of spaces');
+      return response;
+    }
+
+    // Check if response is an object with data property (Anytype API format)
+    if (response && typeof response === 'object' && 'data' in response) {
+      const data = response.data;
+      if (!data || !Array.isArray(data)) {
+        logger.warn('Data property exists but is not an array:', data);
+        return [];
+      }
+      logger.debug(`Found ${data.length} spaces in data property`);
+      return data;
+    }
+
+    // Check if response is an object with spaces property (legacy format)
+    if (response && typeof response === 'object' && 'spaces' in response) {
+      const spaces = response.spaces;
+      if (!spaces || !Array.isArray(spaces)) {
+        logger.warn('Spaces property exists but is not an array:', spaces);
+        return [];
+      }
+      return spaces;
+    }
+
+    logger.warn('Unexpected response format from /v1/spaces:', response);
+    return [];
   }
 
   /**
@@ -214,14 +258,94 @@ export class AnytypeClient {
    * List objects in a space
    */
   public async listObjects(spaceId: string): Promise<AnytypeObject[]> {
-    const response = await this.request<{ objects: AnytypeObject[] }>(
-      `/v1/spaces/${spaceId}/objects`,
-      {
-        method: 'GET',
-      },
-    );
+    const response = await this.request<
+      { data?: AnytypeObject[]; objects?: AnytypeObject[] }
+    >(`/v1/spaces/${spaceId}/objects`, {
+      method: 'GET',
+    });
 
-    return response.objects;
+    // Check for 'data' property first (Anytype API format)
+    if (response.data && Array.isArray(response.data)) {
+      return response.data;
+    }
+
+    // Fallback to 'objects' property (legacy format)
+    return response.objects || [];
+  }
+
+  /**
+   * List all object types available in a space
+   * Falls back to extracting types from existing objects if the types endpoint doesn't exist
+   */
+  public async listObjectTypes(spaceId: string): Promise<AnytypeObjectType[]> {
+    logger.debug('Fetching object types for space:', spaceId);
+
+    try {
+      // Try the types endpoint first
+      const response = await this.request<{
+        data?: AnytypeObjectType[];
+        types?: AnytypeObjectType[];
+      }>(`/v1/spaces/${spaceId}/types`);
+
+      // Handle both response formats
+      if (response && typeof response === 'object') {
+        if ('data' in response && Array.isArray(response.data)) {
+          logger.debug('Found', response.data.length, 'types in data property');
+          return response.data;
+        }
+        if ('types' in response && Array.isArray(response.types)) {
+          logger.debug('Found', response.types.length, 'types in types property');
+          return response.types;
+        }
+      }
+
+      logger.warn('Unexpected response format from listObjectTypes, trying fallback');
+    } catch (error) {
+      logger.warn('Types endpoint failed, falling back to extracting from objects:', error);
+    }
+
+    // Fallback: Extract unique types from existing objects
+    try {
+      const objects = await this.listObjects(spaceId);
+      const typeMap = new Map<string, AnytypeObjectType>();
+
+      // Extract unique types
+      for (const obj of objects) {
+        if (obj.type_key && !typeMap.has(obj.type_key)) {
+          typeMap.set(obj.type_key, {
+            id: obj.type_key,
+            key: obj.type_key,
+            name: obj.type_key.charAt(0).toUpperCase() + obj.type_key.slice(1),
+          });
+        }
+      }
+
+      const extractedTypes = Array.from(typeMap.values());
+      logger.debug('Extracted', extractedTypes.length, 'types from objects');
+
+      // Add common built-in types if not already present
+      const builtInTypes = [
+        { id: 'page', key: 'page', name: 'Page' },
+        { id: 'note', key: 'note', name: 'Note' },
+        { id: 'task', key: 'task', name: 'Task' },
+      ];
+
+      for (const builtIn of builtInTypes) {
+        if (!typeMap.has(builtIn.key)) {
+          extractedTypes.push(builtIn);
+        }
+      }
+
+      return extractedTypes.sort((a, b) => a.name.localeCompare(b.name));
+    } catch (fallbackError) {
+      logger.error('Failed to extract types from objects:', fallbackError);
+      // Last resort: return common built-in types
+      return [
+        { id: 'page', key: 'page', name: 'Page' },
+        { id: 'note', key: 'note', name: 'Note' },
+        { id: 'task', key: 'task', name: 'Task' },
+      ];
+    }
   }
 
   /**
@@ -248,10 +372,21 @@ export class AnytypeClient {
   ): Promise<AnytypeObject> {
     logger.debug('Creating object in space:', spaceId, params);
 
-    return this.request<AnytypeObject>(`/v1/spaces/${spaceId}/objects`, {
-      method: 'POST',
-      body: JSON.stringify(params),
-    });
+    const response = await this.request<{ object?: AnytypeObject } | AnytypeObject>(
+      `/v1/spaces/${spaceId}/objects`,
+      {
+        method: 'POST',
+        body: JSON.stringify(params),
+      },
+    );
+
+    // Handle wrapped response format
+    if (response && typeof response === 'object' && 'object' in response && response.object) {
+      return response.object;
+    }
+
+    // Handle direct object response
+    return response as AnytypeObject;
   }
 
   /**
@@ -293,29 +428,42 @@ export class AnytypeClient {
   ): Promise<AnytypeObject[]> {
     const endpoint = spaceId ? `/v1/spaces/${spaceId}/search` : '/v1/search';
 
-    const response = await this.request<{ objects: AnytypeObject[] }>(
-      endpoint,
-      {
-        method: 'POST',
-        body: JSON.stringify({ query }),
-      },
-    );
+    const response = await this.request<{
+      data?: AnytypeObject[];
+      objects?: AnytypeObject[];
+    }>(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({ query }),
+    });
 
-    return response.objects;
+    // Check for 'data' property first (Anytype API format)
+    if (response.data && Array.isArray(response.data)) {
+      return response.data;
+    }
+
+    // Fallback to 'objects' property (legacy format)
+    return response.objects || [];
   }
 
   /**
    * Check if Anytype API is available
+   *
+   * Since Anytype doesn't have a dedicated /health endpoint, we check
+   * if the API server is reachable by making a request to /v1/spaces.
+   * A 401 Unauthorized response indicates the server is running (just not authenticated).
+   * Any successful response (2xx) also indicates the server is running.
    */
   public async checkHealth(): Promise<boolean> {
     try {
-      const response = await this.window.fetch(`${this.baseUrl}/health`, {
+      const response = await this.window.fetch(`${this.baseUrl}/v1/spaces`, {
         method: 'GET',
         headers: {
           'Anytype-Version': ANYTYPE_API_VERSION,
         },
       });
-      return response.ok;
+      // 401 means server is running but we're not authenticated - that's fine for health check
+      // Any 2xx response also indicates server is running
+      return response.ok || response.status === 401;
     } catch (error) {
       logger.warn('Anytype API health check failed:', error);
       return false;
@@ -387,6 +535,7 @@ export class AnytypeClient {
       }
 
       const data = await response.json();
+      logger.debug(`Response data from ${endpoint}:`, JSON.stringify(data).substring(0, 500));
       return data as T;
     } catch (error) {
       if (error instanceof AnytypeClientError) {

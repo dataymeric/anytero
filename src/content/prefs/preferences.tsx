@@ -8,6 +8,7 @@ import type { FluentMessageId } from '../../locale/fluent-types';
 import type {
   AnytypeAuthManager,
   AnytypeClient,
+  AnytypeObjectType,
 } from '../anytype';
 import type { NotionAuthManager } from '../auth';
 import { LocalizableError } from '../errors';
@@ -408,11 +409,15 @@ class Preferences {
   };
 
   private async refreshAnytypeConnectionSection(): Promise<void> {
+    logger.debug('[Anytype] refreshAnytypeConnectionSection called');
     const apiKey = await this.anytypeAuthManager.getOptionalApiKey();
+
+    logger.debug('[Anytype] API key present:', !!apiKey);
 
     this.anytypeError.hidden = true;
 
     if (!apiKey) {
+      logger.debug('[Anytype] No API key, showing connect button');
       this.anytypeConnectButton.hidden = false;
       this.anytypeConnectionContainer.hidden = true;
       this.anytypeAuthContainer.hidden = true;
@@ -422,10 +427,14 @@ class Preferences {
     this.anytypeConnectionSpinner.setAttribute('status', 'animate');
 
     try {
+      logger.debug('[Anytype] Creating client');
       const client = await this.anytypeAuthManager.createClient(window);
 
       // Check if Anytype is available
+      logger.debug('[Anytype] Checking health');
       const isAvailable = await client.checkHealth();
+      logger.debug('[Anytype] Health check result:', isAvailable);
+      
       if (!isAvailable) {
         throw new LocalizableError(
           'Anytype is not running',
@@ -438,10 +447,22 @@ class Preferences {
       this.anytypeConnectionContainer.hidden = false;
       this.anytypeConnectionSpinner.removeAttribute('status');
 
+      logger.debug('[Anytype] Refreshing space menu');
       await this.refreshAnytypeSpaceMenu(client);
+      
+      logger.debug('[Anytype] Initializing type menu');
       await this.initAnytypeTypeMenu();
+
+      // Refresh types when space changes
+      logger.debug('[Anytype] Adding space change listener');
+      this.anytypeSpaceMenu.addEventListener('command', async () => {
+        logger.debug('[Anytype] Space changed, refreshing types');
+        // Wait a bit for the preference to be saved by XUL
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await this.initAnytypeTypeMenu();
+      });
     } catch (error) {
-      logger.error(error);
+      logger.error('[Anytype] Error in refreshAnytypeConnectionSection:', error);
 
       this.anytypeConnectionSpinner.removeAttribute('status');
       await this.showAnytypeError(error);
@@ -467,30 +488,105 @@ class Preferences {
     try {
       const spaces = await client.listSpaces();
 
-      menuItems = spaces.map<MenuItem>((space) => ({
-        label: space.name || space.id,
-        value: space.id,
-      }));
+      logger.debug('Retrieved spaces:', spaces);
 
-      this.anytypeSpaceMenu.disabled = false;
+      if (spaces.length === 0) {
+        logger.warn('No spaces returned from Anytype API');
+        menuItems = [
+          {
+            label: 'No spaces found',
+            value: '',
+            disabled: true,
+          },
+        ];
+      } else {
+        menuItems = spaces.map<MenuItem>((space) => ({
+          label: space.name || space.id,
+          value: space.id,
+        }));
+        this.anytypeSpaceMenu.disabled = false;
+      }
     } catch (error) {
       logger.error('Failed to load Anytype spaces:', error);
+      menuItems = [
+        {
+          label: 'Failed to load spaces',
+          value: '',
+          disabled: true,
+        },
+      ];
       throw error;
     } finally {
       setMenuItems(this.anytypeSpaceMenu, menuItems);
     }
   }
 
-  private initAnytypeTypeMenu(): void {
-    const menuItems: MenuItem[] = [
-      { label: 'Page', value: 'page' },
-      { label: 'Note', value: 'note' },
-      { label: 'Task', value: 'task' },
-      { label: 'Custom', value: 'custom' },
-    ];
+  private async initAnytypeTypeMenu(): Promise<void> {
+    logger.debug('[Anytype] initAnytypeTypeMenu called');
+    let menuItems: MenuItem[] = [];
 
-    setMenuItems(this.anytypeTypeMenu, menuItems);
-    this.anytypeTypeMenu.disabled = false;
+    this.anytypeTypeMenu.disabled = true;
+
+    try {
+      logger.debug('[Anytype] Creating Anytype client for type menu');
+      const client = await this.anytypeAuthManager.createClient(window);
+      
+      // Read directly from the menulist value, not from preferences
+      const spaceId = this.anytypeSpaceMenu.value;
+
+      logger.debug('[Anytype] Current space ID from menu:', spaceId);
+
+      if (!spaceId) {
+        // No space selected yet, show placeholder
+        logger.debug('[Anytype] No space selected, showing placeholder');
+        menuItems = [
+          {
+            label: 'Select a space first',
+            value: '',
+            disabled: true,
+          },
+        ];
+      } else {
+        logger.debug('[Anytype] Fetching types for space:', spaceId);
+        const types = await client.listObjectTypes(spaceId);
+
+        logger.debug('[Anytype] Retrieved types:', types);
+
+        if (types.length === 0) {
+          logger.warn('[Anytype] No types returned from Anytype API');
+          menuItems = [
+            {
+              label: 'No custom types found',
+              value: '',
+              disabled: true,
+            },
+          ];
+        } else {
+          logger.debug('[Anytype] Building menu items from', types.length, 'types');
+          // Create plain objects to avoid DeadObject issues
+          menuItems = [];
+          for (const type of types) {
+            menuItems.push({
+              label: String(type.name || type.key),
+              value: String(type.key),
+            });
+          }
+          this.anytypeTypeMenu.disabled = false;
+        }
+      }
+    } catch (error) {
+      logger.error('[Anytype] Failed to load Anytype object types:', error);
+      menuItems = [
+        {
+          label: 'Failed to load types',
+          value: '',
+          disabled: true,
+        },
+      ];
+    } finally {
+      logger.debug('[Anytype] Setting menu items:', menuItems);
+      setMenuItems(this.anytypeTypeMenu, menuItems);
+    }
   }
 
   private connectAnytype = async (): Promise<void> => {

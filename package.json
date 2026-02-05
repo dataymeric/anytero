@@ -57,6 +57,7 @@
     }
   },
   "dependencies": {
+    "@notionhq/client": "^5.9.0",
     "eventemitter3": "^5.0.4",
     "zod": "^4.3.6"
   },
