@@ -1,9 +1,7 @@
 # Anytero
 
-[![Latest release](https://img.shields.io/github/v/release/dvanoni/anytero)](https://github.com/dvanoni/anytero/releases/latest)
-[![Total downloads](https://img.shields.io/github/downloads/dvanoni/anytero/latest/total?sort=semver)][download]
-[![Works with Zotero](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdvanoni%2Fanytero%2Fmain%2Fpackage.json&query=%24.xpi.zoteroMinVersion&prefix=v&suffix=%2B&logo=zotero&label=Works%20with%20Zotero&color=%23CC2936)](https://www.zotero.org/)
-[![Buy me a coffee](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapp.buymeacoffee.com%2Fapi%2Fcreators%2Fslug%2Fdvanoni&query=%24.data.public_supporters_count&prefix=%F0%9F%92%9C%20&style=social&logo=buymeacoffee&label=Buy%20me%20a%20coffee)](https://www.buymeacoffee.com/dvanoni)
+> [!IMPORTANT]
+> This fork was fully created by an AI agent (Claude Sonnet 4.5).
 
 Anytero is a [Zotero plugin](https://www.zotero.org/support/plugins) for syncing
 items and notes into [Anytype](https://anytype.io/). To use it:
@@ -17,10 +15,7 @@ items and notes into [Anytype](https://anytype.io/). To use it:
 [Install]: #install-and-configure-anytero-plugin
 [Connect]: #connect-to-anytype
 
-![Anytero in action](docs/notero.gif)
-
-Concept by [@arhoff](https://github.com/arhoff) 👩🏻‍🔬 |
-Built with 💜 by [@dvanoni](https://github.com/dvanoni)
+Concept by [@arhoff](https://github.com/arhoff) 👩🏻‍🔬 | All credits goes to [@dvanoni](https://github.com/dvanoni)
 
 ## Table of Contents
 
@@ -152,37 +147,38 @@ Anytype workspace. Detailed setup instructions are below.
 
 ### Configure Anytype Object Properties
 
-Anytero can sync data for the properties listed below. The properties are
-automatically mapped to your selected object type in Anytype.
+Anytero syncs Zotero items to Anytype objects. The plugin automatically creates
+and populates the necessary properties in your selected object type.
 
-The following Zotero fields are synced to Anytype object properties:
+#### Required Properties
 
-| Zotero Field      | Anytype Property | Notes                                                               |
-| ----------------- | ---------------- | ------------------------------------------------------------------- |
-| Title             | name             | Primary object name                                                 |
-| Abstract          | abstract         | Text property                                                       |
-| Authors           | authors          | Text property with formatted author names                           |
-| Citation Key      | citationKey      | Requires [Better BibTeX](https://retorque.re/zotero-better-bibtex/) |
-| Collections       | collections      | Multi-select tags                                                   |
-| Date              | date             | Text property                                                       |
-| Date Added        | dateAdded        | Date property                                                       |
-| Date Modified     | dateModified     | Date property                                                       |
-| DOI               | doi              | URL property                                                        |
-| Editors           | editors          | Text property                                                       |
-| Extra             | extra            | Text property                                                       |
-| File Path         | filePath         | Text property                                                       |
-| Full Citation     | fullCitation     | Text property (format based on Zotero quick copy settings)          |
-| In-Text Citation  | inTextCitation   | Text property (format based on Zotero quick copy settings)          |
-| Item Type         | itemType         | Select property                                                     |
-| Place             | place            | Text property                                                       |
-| Proceedings Title | proceedingsTitle | Text property                                                       |
-| Publication       | publication      | Text property                                                       |
-| Series Title      | seriesTitle      | Text property                                                       |
-| Short Title       | shortTitle       | Text property                                                       |
-| Tags              | tags             | Multi-select tags                                                   |
-| URL               | url              | URL property                                                        |
-| Year              | year             | Number property                                                     |
-| Zotero URI        | zoteroUri        | URL property (opens items in web library if signed in to Zotero)    |
+Your Anytype object type must have at least:
+
+- A **name** property (text) - this is automatically created for all Anytype objects
+
+#### Synced Properties
+
+The following Zotero fields are synced to Anytype object properties. These properties
+are automatically created in your Anytype object type if they don't exist:
+
+| Zotero Field      | Anytype Property Key | Property Type | Notes                                                                      |
+| ----------------- | -------------------- | ------------- | -------------------------------------------------------------------------- |
+| Title             | Title                | Text          | Primary object name (required, automatically present in all Anytype types) |
+| Authors           | Authors              | Text          | Formatted author names (e.g., "Doe, John; Smith, Jane")                    |
+| Year              | Year                 | Number        | Publication year                                                           |
+| Item Type         | Item Type            | Select        | Type of item (e.g., "Book", "Journal Article", "Conference Paper")         |
+| Publication Title | Publication          | Text          | Name of journal, book series, or publication venue                         |
+| DOI               | DOI                  | URL           | Digital Object Identifier (as clickable link)                              |
+| ISBN              | ISBN                 | Text          | International Standard Book Number                                         |
+| ISSN              | ISSN                 | Text          | International Standard Serial Number                                       |
+| URL               | URL                  | URL           | Web address for the item                                                   |
+
+> [!NOTE]
+>
+> - The **body** property contains rich formatted text including the title, authors, publication info, abstract, tags, collections, and more.
+> - Properties are only synced if they have a value in Zotero.
+> - Text properties are automatically truncated to stay within Anytype's limits.
+> - You can use any custom object type in Anytype - the plugin will create the necessary properties automatically.
 
 ## Usage Guides
 
