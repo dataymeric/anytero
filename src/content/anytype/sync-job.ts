@@ -59,6 +59,7 @@ async function prepareSyncJob(
   const anytypeClient = await getAnytypeClient();
   const spaceId = getRequiredNoteroPref(NoteroPref.anytypeSpaceId);
   const typeKey = getNoteroPref(NoteroPref.anytypeTypeKey) || 'page';
+  logger.debug('Retrieved typeKey from preferences:', typeKey);
   const citationFormat = getCitationFormat();
   const pageTitleFormat = getPageTitleFormat();
 

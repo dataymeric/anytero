@@ -566,6 +566,7 @@ class Preferences {
           // Create plain objects to avoid DeadObject issues
           menuItems = [];
           for (const type of types) {
+            logger.debug(`[Anytype] Adding type - key: "${type.key}", name: "${type.name}"`);
             menuItems.push({
               label: String(type.name || type.key),
               value: String(type.key),
