@@ -190,6 +190,8 @@ class AnytypePropertyBuilder {
     [PageTitleFormat.itemInTextCitation]: () => this.getInTextCitation(),
     [PageTitleFormat.itemShortTitle]: () => this.getShortTitle(),
     [PageTitleFormat.itemTitle]: () => this.getTitle(),
+    [PageTitleFormat.itemTitleTitleCase]: () =>
+      Zotero.Utilities.capitalizeTitle(this.getTitle()),
   };
 
   private async getPageTitle(): Promise<string> {

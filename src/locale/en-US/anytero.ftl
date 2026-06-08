@@ -42,6 +42,8 @@ anytero-page-title-format-item-short-title =
     .label = Item Short Title
 anytero-page-title-format-item-title =
     .label = Item Title
+anytero-page-title-format-item-title-title-case =
+    .label = Item Title (Title Case)
 
 ## Sync preferences
 

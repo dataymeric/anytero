@@ -20,6 +20,7 @@ export enum PageTitleFormat {
   itemInTextCitation = 'itemInTextCitation',
   itemShortTitle = 'itemShortTitle',
   itemTitle = 'itemTitle',
+  itemTitleTitleCase = 'itemTitleTitleCase',
 }
 
 export const PAGE_TITLE_FORMAT_L10N_IDS: Record<
@@ -37,6 +38,8 @@ export const PAGE_TITLE_FORMAT_L10N_IDS: Record<
   [PageTitleFormat.itemShortTitle]:
     'anytero-page-title-format-item-short-title',
   [PageTitleFormat.itemTitle]: 'anytero-page-title-format-item-title',
+  [PageTitleFormat.itemTitleTitleCase]:
+    'anytero-page-title-format-item-title-title-case',
 };
 
 type AnyteroPrefValue = Partial<{
