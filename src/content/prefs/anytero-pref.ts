@@ -10,6 +10,7 @@ export enum AnyteroPref {
   pageTitleFormat = 'pageTitleFormat',
   syncNotes = 'syncNotes',
   syncOnModifyItems = 'syncOnModifyItems',
+  syncReadingListStatus = 'syncReadingListStatus',
 }
 
 export enum PageTitleFormat {
@@ -47,6 +48,7 @@ type AnyteroPrefValue = Partial<{
   [AnyteroPref.pageTitleFormat]: PageTitleFormat;
   [AnyteroPref.syncNotes]: boolean;
   [AnyteroPref.syncOnModifyItems]: boolean;
+  [AnyteroPref.syncReadingListStatus]: boolean;
 }>;
 
 function buildFullPrefName(pref: AnyteroPref): string {
@@ -96,6 +98,7 @@ function convertRawPrefValue<P extends AnyteroPref>(
     [AnyteroPref.pageTitleFormat]: pageTitleFormatPref,
     [AnyteroPref.syncNotes]: booleanPref,
     [AnyteroPref.syncOnModifyItems]: booleanPref,
+    [AnyteroPref.syncReadingListStatus]: booleanPref,
   }[pref];
 }
 
