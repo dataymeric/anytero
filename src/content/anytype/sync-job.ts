@@ -16,7 +16,7 @@ import { ProgressWindow } from '../sync/progress-window';
 import { getLocalizedErrorMessage, logger } from '../utils';
 
 import type { AnytypeClient } from './anytype-client';
-import { syncNoteItem } from './sync-note-item';
+import { getAnytypeObjectID } from './item-data';
 import { syncRegularItem } from './sync-regular-item';
 
 export type AnytypeSyncJobParams = {
@@ -109,6 +109,8 @@ async function syncItems(
   progressWindow: ProgressWindow,
   params: AnytypeSyncJobParams,
 ) {
+  const rebuiltItemIDs = new Set<Zotero.Item['id']>();
+
   for (const [index, item] of items.entries()) {
     const step = index + 1;
     logger.groupCollapsed(
@@ -120,10 +122,17 @@ async function syncItems(
     await progressWindow.updateText(step);
 
     try {
-      if (item.isNote()) {
-        await syncNoteItem(item, params.anytypeClient, params.spaceId);
+      const target = item.isNote() ? item.parentItem : item;
+
+      if (!target) {
+        logger.warn('Note has no parent item; skipping');
+      } else if (item.isNote() && !getAnytypeObjectID(target)) {
+        logger.warn('Parent item not synced to Anytype; skipping note');
+      } else if (rebuiltItemIDs.has(target.id)) {
+        logger.debug('Parent already rebuilt in this job; skipping', target.id);
       } else {
-        await syncRegularItem(item, params);
+        await syncRegularItem(target, params);
+        rebuiltItemIDs.add(target.id);
       }
     } catch (error) {
       throw new ItemSyncError(error, item);

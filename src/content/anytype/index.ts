@@ -31,7 +31,6 @@ export type { AnytypeApiKey } from './storage';
 export { performAnytypeSyncJob } from './sync-job';
 export type { AnytypeSyncJobParams } from './sync-job';
 export { syncRegularItem } from './sync-regular-item';
-export { syncNoteItem } from './sync-note-item';
 export {
   getAnytypeObjectID,
   getAnytypeLinkAttachment,

@@ -31,6 +31,7 @@
 ## Task 1: HTML → markdown converter
 
 **Files:**
+
 - Create: `src/content/anytype/html-to-markdown.ts`
 - Test: `src/content/anytype/__tests__/html-to-markdown.spec.ts`
 
@@ -56,21 +57,19 @@ describe('htmlToMarkdown', () => {
   });
 
   it('converts bold and italic', () => {
-    expect(htmlToMarkdown('<p>Hello <strong>bold</strong> <em>it</em></p>')).toBe(
-      'Hello **bold** *it*',
-    );
+    expect(
+      htmlToMarkdown('<p>Hello <strong>bold</strong> <em>it</em></p>'),
+    ).toBe('Hello **bold** *it*');
   });
 
   it('converts links', () => {
-    expect(
-      htmlToMarkdown('<p>See <a href="https://x.com">link</a></p>'),
-    ).toBe('See [link](https://x.com)');
+    expect(htmlToMarkdown('<p>See <a href="https://x.com">link</a></p>')).toBe(
+      'See [link](https://x.com)',
+    );
   });
 
   it('converts headings', () => {
-    expect(htmlToMarkdown('<h1>Title</h1><p>Body</p>')).toBe(
-      '# Title\n\nBody',
-    );
+    expect(htmlToMarkdown('<h1>Title</h1><p>Body</p>')).toBe('# Title\n\nBody');
   });
 
   it('converts unordered lists', () => {
@@ -78,9 +77,7 @@ describe('htmlToMarkdown', () => {
   });
 
   it('converts ordered lists', () => {
-    expect(htmlToMarkdown('<ol><li>a</li><li>b</li></ol>')).toBe(
-      '1. a\n2. b',
-    );
+    expect(htmlToMarkdown('<ol><li>a</li><li>b</li></ol>')).toBe('1. a\n2. b');
   });
 
   it('converts blockquotes', () => {
@@ -189,7 +186,9 @@ function convertList(listEl: Element, ordered: boolean): string {
     .filter((child) => child.tagName.toLowerCase() === 'li')
     .map((li, index) => {
       const marker = ordered ? `${index + 1}.` : '-';
-      const content = convertChildren(li).trim().replace(/\s*\n\s*/g, ' ');
+      const content = convertChildren(li)
+        .trim()
+        .replace(/\s*\n\s*/g, ' ');
       return `${marker} ${content}`;
     })
     .join('\n');
@@ -215,6 +214,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ## Task 2: Note renderer + body composition
 
 **Files:**
+
 - Create: `src/content/anytype/note-renderer.ts`
 - Test: `src/content/anytype/__tests__/note-renderer.spec.ts`
 
@@ -370,6 +370,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ## Task 3: Simplify synced-note tracking in item-data
 
 **Files:**
+
 - Modify: `src/content/anytype/item-data.ts`
 - Modify: `src/content/services/__tests__/sync-manager.spec.ts`
 
@@ -497,6 +498,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ## Task 4: Rebuild regular-item body from bib + notes
 
 **Files:**
+
 - Modify: `src/content/anytype/sync-regular-item.ts`
 
 - [ ] **Step 1: Update imports**
@@ -549,7 +551,11 @@ async function saveItemToSpace(
 
   const objectId = getAnytypeObjectID(item);
 
-  const { name, body: bibBody, properties } = await buildAnytypeProperties({
+  const {
+    name,
+    body: bibBody,
+    properties,
+  } = await buildAnytypeProperties({
     item,
     citationFormat,
     pageTitleFormat,
@@ -593,6 +599,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ## Task 5: Fold note sync into sync-job; delete sync-note-item
 
 **Files:**
+
 - Delete: `src/content/anytype/sync-note-item.ts`
 - Modify: `src/content/anytype/sync-job.ts`
 - Modify: `src/content/anytype/index.ts`
@@ -704,6 +711,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ## Task 6: Docs cleanup (#4)
 
 **Files:**
+
 - Delete: `docs/PROJECT-SUMMARY.md`, `docs/RELEASE-NOTES.md`, `docs/TROUBLESHOOTING.md`, `docs/context.md`
 - Modify: `docs/DATA-MAPPING.md`, `docs/INSTALLATION.md`, `README.md`
 
@@ -715,7 +723,7 @@ git rm docs/PROJECT-SUMMARY.md docs/RELEASE-NOTES.md docs/TROUBLESHOOTING.md doc
 
 - [ ] **Step 2: Rewrite `docs/DATA-MAPPING.md` to match `property-builder.ts`**
 
-Overwrite `docs/DATA-MAPPING.md` with content describing the *actual* mappings from `src/content/anytype/property-builder.ts`:
+Overwrite `docs/DATA-MAPPING.md` with content describing the _actual_ mappings from `src/content/anytype/property-builder.ts`:
 
 ```markdown
 # Data Mapping
@@ -728,17 +736,17 @@ its notes.
 
 Each property is only set when the Zotero field has a value.
 
-| Zotero field         | Anytype property key | Type   | Notes                                  |
-| -------------------- | -------------------- | ------ | -------------------------------------- |
-| Title                | `title`              | text   | `item.getDisplayTitle()`               |
-| Primary creators     | `authors`            | text   | "Last, First" joined by "; "           |
-| Year                 | `year`               | number | Parsed from the item's date            |
-| Item type            | `item_type`          | select | Localized item type name               |
-| Publication title    | `publication`        | text   | Journal / book / venue                 |
-| DOI                  | `doi`                | url    | `https://doi.org/<DOI>`                |
-| ISBN                 | `isbn`               | text   |                                        |
-| ISSN                 | `issn`               | text   |                                        |
-| URL                  | `url`                | url    |                                        |
+| Zotero field      | Anytype property key | Type   | Notes                        |
+| ----------------- | -------------------- | ------ | ---------------------------- |
+| Title             | `title`              | text   | `item.getDisplayTitle()`     |
+| Primary creators  | `authors`            | text   | "Last, First" joined by "; " |
+| Year              | `year`               | number | Parsed from the item's date  |
+| Item type         | `item_type`          | select | Localized item type name     |
+| Publication title | `publication`        | text   | Journal / book / venue       |
+| DOI               | `doi`                | url    | `https://doi.org/<DOI>`      |
+| ISBN              | `isbn`               | text   |                              |
+| ISSN              | `issn`               | text   |                              |
+| URL               | `url`                | url    |                              |
 
 Text properties are truncated to stay within Anytype's length limits.
 

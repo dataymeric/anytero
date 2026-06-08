@@ -41,7 +41,7 @@ from the item and all its current notes**, then PATCH the whole body.
 ### Components
 
 - **`property-builder.ts`** (unchanged behavior) — produces the bibliographic
-  section. Its output becomes the body *header* rather than the entire body.
+  section. Its output becomes the body _header_ rather than the entire body.
 - **`html-to-markdown.ts`** (new, in `src/content/anytype/`) — a hand-written
   DOM walker using `DOMParser` (no new dependency, consistent with having
   dropped `@notionhq/client`). Converts the HTML elements Zotero notes actually
