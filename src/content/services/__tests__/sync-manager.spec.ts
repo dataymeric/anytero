@@ -7,24 +7,21 @@ import {
   mockZoteroPrefs,
   zoteroMock,
 } from '../../../../test/utils';
-import { AnytypeAuthManager } from '../../anytype';
-import { NotionAuthManager } from '../../auth';
-import { getSyncedNotes } from '../../data/item-data';
+import { AnytypeAuthManager, performAnytypeSyncJob } from '../../anytype';
+import { getSyncedNotes } from '../../anytype/item-data';
 import { saveSyncConfigs } from '../../prefs/collection-sync-config';
 import { NoteroPref, setNoteroPref } from '../../prefs/notero-pref';
-import { performSyncJob } from '../../sync/sync-job';
 import { parseItemDate } from '../../utils';
 import { EventManager, SyncManager } from '../index';
 
-vi.mock('../../data/item-data');
-vi.mock('../../sync/sync-job');
+vi.mock('../../anytype/item-data');
 vi.mock('../../utils/parse-item-date');
 vi.mock('../../anytype');
 
 vi.mocked(parseItemDate).mockImplementation((date) => new Date(date));
 
 const mockedGetSyncedNotes = vi.mocked(getSyncedNotes);
-const mockedPerformSyncJob = vi.mocked(performSyncJob);
+const mockedPerformSyncJob = vi.mocked(performAnytypeSyncJob);
 
 const pluginInfo = {
   pluginID: 'test',
@@ -139,11 +136,10 @@ function setup({
   mockZoteroPrefs();
 
   const eventManager = new EventManager();
-  const notionAuthManager = new NotionAuthManager();
   const anytypeAuthManager = new AnytypeAuthManager();
   const syncManager = new SyncManager();
 
-  const dependencies = { eventManager, notionAuthManager, anytypeAuthManager };
+  const dependencies = { eventManager, anytypeAuthManager };
 
   syncManager.startup({ dependencies, pluginInfo });
 
@@ -153,7 +149,7 @@ function setup({
 
   setNoteroPref(NoteroPref.syncNotes, syncNotes);
   setNoteroPref(NoteroPref.syncOnModifyItems, syncOnModifyItems);
-  setNoteroPref(NoteroPref.notionDatabaseID, 'test-database-id');
+  setNoteroPref(NoteroPref.anytypeSpaceId, 'test-space-id');
 
   return { eventManager };
 }
@@ -177,7 +173,7 @@ describe('SyncManager', () => {
 
     vi.runAllTimers();
 
-    expect(performSyncJob).toHaveBeenCalledTimes(0);
+    expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
   });
 
   it('performs sync using the latest available window', async () => {
@@ -292,7 +288,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync when collection is not sync-enabled', () => {
@@ -302,7 +298,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('syncs regular items in collection when `syncOnModifyItems` is enabled and collection is sync-enabled', () => {
@@ -326,7 +322,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync when collection is not sync-enabled', () => {
@@ -336,7 +332,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('syncs regular items in collection when `syncOnModifyItems` is enabled and collection is sync-enabled', () => {
@@ -362,7 +358,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('syncs item and notes when `syncOnModifyItems` is disabled and item is in sync-enabled collection', () => {
@@ -402,7 +398,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync when regular item is not in sync-enabled collection', () => {
@@ -414,7 +410,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync when note item is not in sync-enabled collection', () => {
@@ -426,7 +422,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync of note item when `syncNotes` is disabled', () => {
@@ -438,7 +434,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync when item is deleted', () => {
@@ -448,7 +444,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('syncs item when `syncOnModifyItems` is enabled and item is in sync-enabled collection', () => {
@@ -498,7 +494,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync when item is not in sync-enabled collection', () => {
@@ -510,7 +506,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync when item is deleted', () => {
@@ -522,7 +518,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('syncs item when `syncOnModifyItems` is enabled and item is in sync-enabled collection', () => {
@@ -550,7 +546,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync when item is not in sync-enabled collection', () => {
@@ -562,7 +558,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('does not perform sync when item is deleted', () => {
@@ -574,7 +570,7 @@ describe('SyncManager', () => {
 
       vi.runAllTimers();
 
-      expect(performSyncJob).toHaveBeenCalledTimes(0);
+      expect(performAnytypeSyncJob).toHaveBeenCalledTimes(0);
     });
 
     it('syncs item when `syncOnModifyItems` is enabled and item is in sync-enabled collection', () => {

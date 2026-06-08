@@ -9,9 +9,9 @@ export class ProgressWindow {
   public constructor(itemCount: number, window: Window) {
     this.itemCount = itemCount;
     this.l10n = window.document.l10n;
-    this.progressWindow = new Zotero.ProgressWindow({ 
+    this.progressWindow = new Zotero.ProgressWindow({
       closeOnClick: false,
-      window 
+      window,
     });
   }
 
@@ -52,7 +52,7 @@ export class ProgressWindow {
       this.itemProgress.setText(errorMessage);
       this.progressWindow.addDescription(''); // Hack to force window resize
     }
-    
+
     // Auto-close after showing the error
     this.progressWindow.startCloseTimer(5000); // 5 seconds to read the error
   }

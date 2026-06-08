@@ -11,7 +11,6 @@ import {
   buildCollectionFullName,
   getItemURL,
   logger,
-  parseItemDate,
   truncateMiddle,
 } from '../utils';
 
@@ -69,11 +68,11 @@ class AnytypePropertyBuilder {
     properties: AnytypeProperty[];
   }> {
     const name = await this.getPageTitle();
-    const body = await this.buildBody();
-    
+    const body = this.buildBody();
+
     // Build properties from definitions
     const properties: AnytypeProperty[] = [];
-    
+
     for (const definition of this.propertyDefinitions) {
       try {
         const value = await definition.buildValue();
@@ -93,7 +92,7 @@ class AnytypePropertyBuilder {
   /**
    * Build formatted body content with all bibliographic data
    */
-  private async buildBody(): Promise<string> {
+  private buildBody(): string {
     const sections: string[] = [];
 
     // Title
@@ -141,9 +140,9 @@ class AnytypePropertyBuilder {
     }
 
     // Collections
-    const collections = Zotero.Collections.get(
-      this.item.getCollections(),
-    ).map((collection) => buildCollectionFullName(collection));
+    const collections = Zotero.Collections.get(this.item.getCollections()).map(
+      (collection) => buildCollectionFullName(collection),
+    );
     if (collections.length > 0) {
       sections.push(`\n**Collections:** ${collections.join(', ')}\n`);
     }

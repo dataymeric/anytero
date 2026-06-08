@@ -130,10 +130,10 @@ async function syncItems(
     }
 
     progressWindow.updateProgress(step);
-    
+
     // Add delay between items to avoid rate limiting (except for the last item)
     if (step < items.length) {
-      await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
+      await new Promise((resolve) => setTimeout(resolve, 500)); // 500ms delay
     }
   }
 

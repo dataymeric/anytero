@@ -2,10 +2,7 @@ import type { NoteroPref } from '../prefs/notero-pref';
 
 import { ErrorL10nId, LocalizableError } from './LocalizableError';
 
-const L10N_IDS: Partial<Record<NoteroPref, ErrorL10nId>> = {
-  notionDatabaseID: 'notero-error-missing-notion-database',
-  notionToken: 'notero-error-missing-notion-token',
-};
+const L10N_IDS: Partial<Record<NoteroPref, ErrorL10nId>> = {};
 
 export class MissingPrefError extends LocalizableError {
   public readonly name = 'MissingPrefError';

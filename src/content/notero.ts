@@ -1,24 +1,17 @@
-import type { Client } from '@notionhq/client';
-
 import { AnytypeAuthManager, type AnytypeClient } from './anytype';
-import { NotionAuthManager } from './auth';
 import type { PluginInfo } from './plugin-info';
 import {
   EventManager,
   PreferencePaneManager,
-  ProtocolHandlerExtension,
   Service,
   ServiceParams,
   SyncManager,
   UIManager,
 } from './services';
-import { findDuplicates } from './sync/find-duplicates';
-import { getNotionClient } from './sync/notion-client';
 import { logger } from './utils';
 
 export class Notero {
   public readonly eventManager: EventManager;
-  public readonly notionAuthManager: NotionAuthManager;
   public readonly anytypeAuthManager: AnytypeAuthManager;
 
   private readonly preferencePaneManager: PreferencePaneManager;
@@ -26,16 +19,13 @@ export class Notero {
 
   public constructor() {
     this.eventManager = new EventManager();
-    this.notionAuthManager = new NotionAuthManager();
     this.anytypeAuthManager = new AnytypeAuthManager();
     this.preferencePaneManager = new PreferencePaneManager();
 
     this.services = [
       this.eventManager,
-      this.notionAuthManager,
       this.anytypeAuthManager,
       this.preferencePaneManager,
-      new ProtocolHandlerExtension(),
       new SyncManager(),
       new UIManager(),
     ];
@@ -56,7 +46,6 @@ export class Notero {
   private async startServices(pluginInfo: PluginInfo) {
     const dependencies: ServiceParams['dependencies'] = {
       eventManager: this.eventManager,
-      notionAuthManager: this.notionAuthManager,
       anytypeAuthManager: this.anytypeAuthManager,
       preferencePaneManager: this.preferencePaneManager,
     };
@@ -116,21 +105,6 @@ export class Notero {
       service.removeFromWindow(window);
     });
     logger.groupEnd();
-  }
-
-  public async getNotionClient(): Promise<Client> {
-    const mainWindow = Zotero.getMainWindow();
-    if (!mainWindow) throw new Error('No window available');
-
-    const authToken = await this.notionAuthManager.getRequiredAuthToken();
-
-    return getNotionClient(authToken, mainWindow);
-  }
-
-  public async findDuplicates(
-    propertyName: string = 'title',
-  ): Promise<Set<string>> {
-    return findDuplicates(await this.getNotionClient(), propertyName);
   }
 
   public async getAnytypeClient(): Promise<AnytypeClient> {

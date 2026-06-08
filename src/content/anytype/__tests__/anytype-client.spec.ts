@@ -108,7 +108,7 @@ describe('AnytypeClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => space,
+        json: () => Promise.resolve(space),
       });
 
       const result = await client.getSpace('space_1');
@@ -133,7 +133,7 @@ describe('AnytypeClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => object,
+        json: () => Promise.resolve(object),
       });
 
       const result = await client.createObject('space_1', {
@@ -161,7 +161,7 @@ describe('AnytypeClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => updatedObject,
+        json: () => Promise.resolve(updatedObject),
       });
 
       const result = await client.updateObject('space_1', 'obj_123', {
@@ -182,7 +182,7 @@ describe('AnytypeClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => object,
+        json: () => Promise.resolve(object),
       });
 
       const result = await client.getObject('space_1', 'obj_123');
@@ -260,7 +260,8 @@ describe('AnytypeClient', () => {
         ok: false,
         status: 404,
         statusText: 'Not Found',
-        text: () => Promise.resolve(JSON.stringify({ error: 'Object not found' })),
+        text: () =>
+          Promise.resolve(JSON.stringify({ error: 'Object not found' })),
       });
 
       await expect(client.getObject('space_1', 'invalid')).rejects.toThrow(

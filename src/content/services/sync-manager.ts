@@ -1,8 +1,7 @@
 import { performAnytypeSyncJob, type AnytypeClient } from '../anytype';
-import { getSyncedNotes } from '../data/item-data';
+import { getSyncedNotes } from '../anytype/item-data';
 import { loadSyncEnabledCollectionIDs } from '../prefs/collection-sync-config';
 import { getNoteroPref, NoteroPref } from '../prefs/notero-pref';
-import { performSyncJob } from '../sync/sync-job';
 import { getAllCollectionItems, logger, parseItemDate } from '../utils';
 
 import type { EventManager, NotifierEventParams } from './event-manager';
@@ -18,7 +17,6 @@ type QueuedSync = {
 export class SyncManager implements Service {
   private eventManager!: EventManager;
 
-  private getNotionAuthToken!: () => Promise<string>;
   private getAnytypeClient!: (window: Window) => Promise<AnytypeClient>;
 
   private queuedSync?: QueuedSync;
@@ -26,14 +24,9 @@ export class SyncManager implements Service {
   private syncInProgress = false;
 
   public startup({
-    dependencies: { eventManager, notionAuthManager, anytypeAuthManager },
-  }: ServiceParams<
-    'eventManager' | 'notionAuthManager' | 'anytypeAuthManager'
-  >) {
+    dependencies: { eventManager, anytypeAuthManager },
+  }: ServiceParams<'eventManager' | 'anytypeAuthManager'>) {
     this.eventManager = eventManager;
-
-    this.getNotionAuthToken =
-      notionAuthManager.getRequiredAuthToken.bind(notionAuthManager);
 
     this.getAnytypeClient =
       anytypeAuthManager.createClient.bind(anytypeAuthManager);
@@ -191,12 +184,12 @@ export class SyncManager implements Service {
   }
 
   /**
-   * Enqueue Zotero items to sync to Notion.
+   * Enqueue Zotero items to sync to Anytype.
    *
    * Because Zotero items can be updated multiple times in short succession,
    * any subsequent updates after the first can sometimes occur before the
-   * initial sync has finished and added the Notion link attachment. This has
-   * the potential to end up creating duplicate Notion pages.
+   * initial sync has finished and added the Anytype link attachment. This has
+   * the potential to end up creating duplicate Anytype objects.
    *
    * To address this, we use two strategies:
    * - Debounce syncs so that they occur, at most, every `SYNC_DEBOUNCE_MS` ms
@@ -215,7 +208,7 @@ export class SyncManager implements Service {
    *    - If there is one with a remaining timeout, let it run when it times out
    *    - Otherwise, do nothing
    *
-   * @param items the Zotero items to sync to Notion
+   * @param items the Zotero items to sync to Anytype
    */
   private enqueueItemsToSync(items: readonly Zotero.Item[]) {
     if (!items.length) {
@@ -266,23 +259,17 @@ export class SyncManager implements Service {
     this.queuedSync = undefined as QueuedSync | undefined;
     this.syncInProgress = true;
 
-    // Check which service is configured
     const anytypeSpaceId = getNoteroPref(NoteroPref.anytypeSpaceId);
-    const notionDatabaseId = getNoteroPref(NoteroPref.notionDatabaseID);
 
     try {
       if (anytypeSpaceId) {
-        // Use Anytype if space is configured
         await performAnytypeSyncJob(
           itemIDs,
           () => this.getAnytypeClient(mainWindow),
           mainWindow,
         );
-      } else if (notionDatabaseId) {
-        // Fall back to Notion
-        await performSyncJob(itemIDs, this.getNotionAuthToken, mainWindow);
       } else {
-        logger.warn('No sync service configured (neither Anytype nor Notion)');
+        logger.warn('No Anytype space configured; skipping sync');
       }
     } catch (error) {
       logger.error('Sync failed:', error);

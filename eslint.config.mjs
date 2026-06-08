@@ -74,4 +74,13 @@ export default defineConfig(
       'no-console': 'off',
     },
   },
+  {
+    // Vitest matchers (`expect.any`, `expect.objectContaining`) and mock method
+    // references are inherently typed as `any`/unbound under strictTypeChecked.
+    files: ['**/__tests__/**', '**/*.spec.*'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+    },
+  },
 );

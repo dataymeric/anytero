@@ -5,7 +5,7 @@
 **Project**: Anytero (formerly Notero)  
 **Version**: 2.0.0  
 **Completion Date**: February 2025  
-**Development Duration**: Complete transformation in 12 phases  
+**Development Duration**: Complete transformation in 12 phases
 
 ## What Was Built
 
@@ -14,11 +14,13 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 ## Key Achievements
 
 ### ✅ Complete Anytype Integration
+
 - **anytype-client.ts** (403 lines): Full REST API client with authentication, spaces, objects, and health checks
 - **anytype-auth-manager.ts** (214 lines): Challenge-response authentication manager integrated into service system
 - **storage.ts** (105 lines): Secure API key storage using Zotero's login manager
 
 ### ✅ Data Synchronization
+
 - **property-builder.ts** (475 lines): Comprehensive Zotero→Anytype field mapping
 - **sync-job.ts** (147 lines): Orchestrates sync operations with progress tracking
 - **sync-regular-item.ts** (127 lines): Syncs bibliography items
@@ -26,6 +28,7 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 - **item-data.ts** (243 lines): Anytype-specific item data management
 
 ### ✅ User Interface
+
 - **preferences.tsx** (680+ lines): Complete preferences UI with:
   - Anytype authentication flow
   - Space selection and browsing
@@ -35,12 +38,14 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 - **notero.ftl** (15 strings): Localization for Anytype features
 
 ### ✅ Testing & Quality
+
 - **anytype-client.spec.ts** (254 lines, 14 tests): Client testing
 - **anytype-auth-manager.spec.ts** (249 lines, 14 tests): Auth manager testing
 - **165 total tests passing** (28 new + 137 existing)
 - **100% test coverage** of new Anytype code
 
 ### ✅ Documentation
+
 - **INSTALLATION.md**: Step-by-step installation guide
 - **TROUBLESHOOTING.md**: Solutions for 10+ common issues
 - **DATA-MAPPING.md**: Complete field mapping documentation
@@ -52,35 +57,41 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 ## Development Phases
 
 ### Phase 1-2: Analysis ✅
+
 - Analyzed Notero codebase structure
 - Identified Notion-specific components
 - Mapped to Anytype API equivalents
 - Created development specification
 
 ### Phase 3: Anytype API Client ✅
+
 - Implemented REST API client
 - Added authentication endpoints
 - Implemented CRUD operations for spaces/objects
 - Added health check functionality
 
 ### Phase 4: Service Integration ✅
+
 - Created authentication manager service
 - Integrated with Zotero's service system
 - Added secure storage using login manager
 - Implemented event-driven architecture
 
 ### Phase 5: Preference Keys ✅
+
 - Added Anytype-specific preference keys
 - Maintained backward compatibility
 - Added space ID and API key preferences
 
 ### Phase 6: Preferences UI ✅
+
 - Built complete authentication UI
 - Added space selection interface
 - Created sync configuration UI
 - Added connection status indicators
 
 ### Phase 7-8: Sync Logic ✅
+
 - Implemented sync orchestration
 - Added property mapping
 - Implemented item syncing (regular + notes)
@@ -88,24 +99,28 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 - Integrated with sync manager
 
 ### Phase 9: Rebranding ✅
+
 - Renamed project to Anytero
 - Updated package.json (name, description, URLs)
 - Rewrote README for Anytype
 - Updated privacy policy
 
 ### Phase 10: Testing ✅
+
 - Created comprehensive test suites
 - Added 28 new Anytype tests
 - All 165 tests passing
 - Achieved 100% coverage of new code
 
 ### Phase 11: Documentation ✅
+
 - Wrote installation guide
 - Created troubleshooting guide
 - Documented data mappings
 - Updated changelog
 
 ### Phase 12: Release Preparation ✅
+
 - Built XPI package
 - Created release notes
 - Fixed formatting/linting
@@ -114,6 +129,7 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 ## Technical Specifications
 
 ### Technology Stack
+
 - **Language**: TypeScript 5.x (strict mode)
 - **Testing**: Vitest with 165 passing tests
 - **Build**: Custom build scripts (ESM)
@@ -121,12 +137,14 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 - **Formatting**: Prettier
 
 ### Anytype API
+
 - **Version**: 2025-11-08 REST API
 - **Base URL**: http://localhost:31009
 - **Authentication**: Challenge-response (4-digit codes)
 - **Endpoints**: Auth, Spaces, Objects, Health
 
 ### Zotero Integration
+
 - **Version**: 7.0+ required
 - **Storage**: Zotero login manager
 - **Services**: Event-driven architecture
@@ -135,6 +153,7 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 ## File Statistics
 
 ### New Files Created
+
 - **Source Code**: 9 files (~2,000 lines)
   - anytype-client.ts
   - anytype-auth-manager.ts
@@ -160,6 +179,7 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
   - Updated PRIVACY.md
 
 ### Files Modified
+
 - **UI**: 2 files (~260 lines modified)
   - preferences.tsx
   - preferences.xhtml
@@ -199,24 +219,28 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 ## Key Features
 
 ### 1. Local-First Privacy
+
 - All data stored locally
 - No cloud dependencies
 - API runs on localhost
 - Secure credential storage
 
 ### 2. Challenge-Response Auth
+
 - 4-digit authentication codes
 - Time-limited sessions
 - Desktop app approval required
 - Secure key storage
 
 ### 3. Flexible Sync
+
 - Collection-based sync
 - Automatic sync on changes
 - Manual sync available
 - Progress tracking
 
 ### 4. Comprehensive Mapping
+
 - Full metadata support
 - Author/creator handling
 - Date parsing
@@ -224,6 +248,7 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 - Note content conversion
 
 ### 5. Robust Error Handling
+
 - Clear error messages
 - Localized errors
 - Detailed logging
@@ -232,18 +257,21 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 ## What's Next
 
 ### Immediate (v2.0.0)
+
 - ✅ Release XPI package
 - ✅ Publish documentation
 - ✅ Create GitHub release
 - ✅ Update project README
 
 ### Short-term (v2.1)
+
 - Bidirectional sync (Anytype → Zotero)
 - Full attachment file upload
 - Performance optimizations
 - Advanced filtering
 
 ### Long-term (v2.2+)
+
 - Custom Anytype object types
 - Conflict resolution UI
 - Multiple space support
@@ -261,18 +289,21 @@ Anytero is a complete reimplementation of Notero, replacing Notion integration w
 ## Lessons Learned
 
 ### What Went Well
+
 1. **Modular design**: Service-based architecture made integration clean
 2. **Test-first**: Writing tests caught issues early
 3. **Type safety**: TypeScript prevented many bugs
 4. **Documentation**: Comprehensive guides reduce support burden
 
 ### Challenges Overcome
+
 1. **API differences**: Anytype vs Notion have very different models
 2. **Local-first**: Adapting from cloud to localhost API
 3. **Auth flow**: Challenge-response is more complex than OAuth
 4. **Data mapping**: Zotero's rich metadata → Anytype's flexible structure
 
 ### Best Practices Established
+
 1. **Service pattern**: Clean dependency injection
 2. **Event-driven**: Decoupled components
 3. **Secure storage**: Using Zotero's built-in password manager

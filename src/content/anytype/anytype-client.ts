@@ -208,7 +208,7 @@ export class AnytypeClient {
     }
 
     // Check if response is an object with data property (Anytype API format)
-    if (response && typeof response === 'object' && 'data' in response) {
+    if ('data' in response) {
       const data = response.data;
       if (!data || !Array.isArray(data)) {
         logger.warn('Data property exists but is not an array:', data);
@@ -219,7 +219,7 @@ export class AnytypeClient {
     }
 
     // Check if response is an object with spaces property (legacy format)
-    if (response && typeof response === 'object' && 'spaces' in response) {
+    if ('spaces' in response) {
       const spaces = response.spaces;
       if (!spaces || !Array.isArray(spaces)) {
         logger.warn('Spaces property exists but is not an array:', spaces);
@@ -258,9 +258,10 @@ export class AnytypeClient {
    * List objects in a space
    */
   public async listObjects(spaceId: string): Promise<AnytypeObject[]> {
-    const response = await this.request<
-      { data?: AnytypeObject[]; objects?: AnytypeObject[] }
-    >(`/v1/spaces/${spaceId}/objects`, {
+    const response = await this.request<{
+      data?: AnytypeObject[];
+      objects?: AnytypeObject[];
+    }>(`/v1/spaces/${spaceId}/objects`, {
       method: 'GET',
     });
 
@@ -288,20 +289,23 @@ export class AnytypeClient {
       }>(`/v1/spaces/${spaceId}/types`);
 
       // Handle both response formats
-      if (response && typeof response === 'object') {
-        if ('data' in response && Array.isArray(response.data)) {
-          logger.debug('Found', response.data.length, 'types in data property');
-          return response.data;
-        }
-        if ('types' in response && Array.isArray(response.types)) {
-          logger.debug('Found', response.types.length, 'types in types property');
-          return response.types;
-        }
+      if ('data' in response && Array.isArray(response.data)) {
+        logger.debug('Found', response.data.length, 'types in data property');
+        return response.data;
+      }
+      if ('types' in response && Array.isArray(response.types)) {
+        logger.debug('Found', response.types.length, 'types in types property');
+        return response.types;
       }
 
-      logger.warn('Unexpected response format from listObjectTypes, trying fallback');
+      logger.warn(
+        'Unexpected response format from listObjectTypes, trying fallback',
+      );
     } catch (error) {
-      logger.warn('Types endpoint failed, falling back to extracting from objects:', error);
+      logger.warn(
+        'Types endpoint failed, falling back to extracting from objects:',
+        error,
+      );
     }
 
     // Fallback: Extract unique types from existing objects
@@ -316,9 +320,9 @@ export class AnytypeClient {
           const formattedName = obj.type_key
             .replace(/[-_]/g, ' ')
             .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
-          
+
           typeMap.set(obj.type_key, {
             id: obj.type_key,
             key: obj.type_key,
@@ -379,18 +383,17 @@ export class AnytypeClient {
   ): Promise<AnytypeObject> {
     logger.debug('Creating object in space:', spaceId, params);
 
-    const response = await this.request<{ object?: AnytypeObject } | AnytypeObject>(
-      `/v1/spaces/${spaceId}/objects`,
-      {
-        method: 'POST',
-        body: JSON.stringify(params),
-      },
-    );
+    const response = await this.request<
+      { object?: AnytypeObject } | AnytypeObject
+    >(`/v1/spaces/${spaceId}/objects`, {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
 
     logger.debug('Create object response:', response);
 
     // Handle wrapped response format
-    if (response && typeof response === 'object' && 'object' in response && response.object) {
+    if ('object' in response && response.object) {
       logger.debug('Returning wrapped object with id:', response.object.id);
       return response.object;
     }
@@ -426,9 +429,12 @@ export class AnytypeClient {
   public async deleteObject(spaceId: string, objectId: string): Promise<void> {
     logger.debug('Deleting object:', objectId, 'in space:', spaceId);
 
-    await this.request<Record<string, never>>(`/v1/spaces/${spaceId}/objects/${objectId}`, {
-      method: 'DELETE',
-    });
+    await this.request<Record<string, never>>(
+      `/v1/spaces/${spaceId}/objects/${objectId}`,
+      {
+        method: 'DELETE',
+      },
+    );
   }
 
   /**
@@ -547,7 +553,10 @@ export class AnytypeClient {
       }
 
       const data = await response.json();
-      logger.debug(`Response data from ${endpoint}:`, JSON.stringify(data).substring(0, 500));
+      logger.debug(
+        `Response data from ${endpoint}:`,
+        JSON.stringify(data).substring(0, 500),
+      );
       return data as T;
     } catch (error) {
       if (error instanceof AnytypeClientError) {

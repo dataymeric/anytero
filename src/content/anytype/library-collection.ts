@@ -16,7 +16,7 @@ const LIBRARY_COLLECTION_TYPE = 'page'; // Using 'page' type for the library con
 
 /**
  * Get or create the library collection object in Anytype
- * 
+ *
  * This function ensures that a single library collection object exists in the
  * specified space. It first checks if we have a stored collection ID, then
  * verifies it still exists, or creates a new one if needed.
@@ -26,7 +26,9 @@ export async function getOrCreateLibraryCollection(
   spaceId: string,
 ): Promise<AnytypeObject> {
   // Check if we have a stored collection ID
-  const storedCollectionId = getNoteroPref(NoteroPref.anytypeLibraryCollectionId);
+  const storedCollectionId = getNoteroPref(
+    NoteroPref.anytypeLibraryCollectionId,
+  );
 
   if (storedCollectionId) {
     try {
@@ -35,21 +37,35 @@ export async function getOrCreateLibraryCollection(
       logger.debug('Found existing library collection:', collection.id);
       return collection;
     } catch (error) {
-      logger.warn('Stored library collection not found, will create new one:', error);
+      logger.warn(
+        'Stored library collection not found, will create new one:',
+        error,
+      );
       // Continue to create a new collection
     }
   }
 
   // Search for an existing library collection by name
   try {
-    const results = await client.searchObjects(LIBRARY_COLLECTION_NAME, spaceId);
+    const results = await client.searchObjects(
+      LIBRARY_COLLECTION_NAME,
+      spaceId,
+    );
     const existingCollection = results.find(
-      (obj) => obj.name === LIBRARY_COLLECTION_NAME && obj.type_key === LIBRARY_COLLECTION_TYPE
+      (obj) =>
+        obj.name === LIBRARY_COLLECTION_NAME &&
+        obj.type_key === LIBRARY_COLLECTION_TYPE,
     );
 
     if (existingCollection) {
-      logger.debug('Found library collection by search:', existingCollection.id);
-      setNoteroPref(NoteroPref.anytypeLibraryCollectionId, existingCollection.id);
+      logger.debug(
+        'Found library collection by search:',
+        existingCollection.id,
+      );
+      setNoteroPref(
+        NoteroPref.anytypeLibraryCollectionId,
+        existingCollection.id,
+      );
       return existingCollection;
     }
   } catch (error) {

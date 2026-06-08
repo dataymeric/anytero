@@ -1,20 +1,11 @@
-import { APIErrorCode, type Client, isFullDatabase } from '@notionhq/client';
-import type { DatabaseObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import type { createRoot } from 'react-dom/client';
 
 import type { FluentMessageId } from '../../locale/fluent-types';
-import type {
-  AnytypeAuthManager,
-  AnytypeClient,
-  AnytypeObjectType,
-} from '../anytype';
-import type { NotionAuthManager } from '../auth';
+import type { AnytypeAuthManager, AnytypeClient } from '../anytype';
 import { LocalizableError } from '../errors';
 import type { EventManager } from '../services';
-import { getNotionClient } from '../sync/notion-client';
-import { isNotionErrorWithCode, normalizeID } from '../sync/notion-utils';
 import {
   createXULElement,
   getGlobalNotero,
@@ -53,17 +44,7 @@ function setMenuItems(menuList: XUL.MenuListElement, items: MenuItem[]): void {
 
 class Preferences {
   private eventManager!: EventManager;
-  private notionAuthManager!: NotionAuthManager;
   private anytypeAuthManager!: AnytypeAuthManager;
-  private notionConnectionContainer!: XUL.XULElement;
-  private notionConnectionSpinner!: XUL.XULElement;
-  private notionConnectButton!: XUL.ButtonElement;
-  private notionDisconnectButton!: XUL.ButtonElement;
-  private notionUpgradeConnectionButton!: XUL.ButtonElement;
-  private notionDatabaseMenu!: XUL.MenuListElement;
-  private notionError!: XUL.LabelElement;
-  private notionTokenContainer!: XUL.XULElement;
-  private notionWorkspaceLabel!: XUL.LabelElement;
   private anytypeConnectionContainer!: XUL.XULElement;
   private anytypeConnectionSpinner!: XUL.XULElement;
   private anytypeConnectButton!: XUL.ButtonElement;
@@ -74,34 +55,15 @@ class Preferences {
   private anytypeSpaceMenu!: XUL.MenuListElement;
   private anytypeTypeMenu!: XUL.MenuListElement;
   private anytypeError!: XUL.LabelElement;
-  private anytypeCurrentChallenge?: string;
   private pageTitleFormatMenu!: XUL.MenuListElement;
 
   public async init(): Promise<void> {
     await Zotero.uiReadyPromise;
 
     this.eventManager = getGlobalNotero().eventManager;
-    this.notionAuthManager = getGlobalNotero().notionAuthManager;
     this.anytypeAuthManager = getGlobalNotero().anytypeAuthManager;
 
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
-    this.notionConnectionContainer = getXULElementById(
-      'notero-notionConnection-container',
-    )!;
-    this.notionConnectionSpinner = getXULElementById(
-      'notero-notionConnection-spinner',
-    )!;
-    this.notionConnectButton = getXULElementById('notero-notionConnect')!;
-    this.notionDisconnectButton = getXULElementById('notero-notionDisconnect')!;
-    this.notionUpgradeConnectionButton = getXULElementById(
-      'notero-notionUpgradeConnection',
-    )!;
-    this.notionDatabaseMenu = getXULElementById('notero-notionDatabase')!;
-    this.notionError = getXULElementById('notero-notionError')!;
-    this.notionTokenContainer = getXULElementById(
-      'notero-notionToken-container',
-    )!;
-    this.notionWorkspaceLabel = getXULElementById('notero-notionWorkspace')!;
     this.anytypeConnectionContainer = getXULElementById(
       'notero-anytypeConnection-container',
     )!;
@@ -126,16 +88,6 @@ class Preferences {
     /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
     /* eslint-disable @typescript-eslint/no-misused-promises */
-    this.notionConnectButton.addEventListener('command', this.connectNotion);
-    this.notionDisconnectButton.addEventListener(
-      'command',
-      this.disconnectNotion,
-    );
-    this.notionUpgradeConnectionButton.addEventListener(
-      'command',
-      this.upgradeNotionConnection,
-    );
-    this.notionTokenContainer.addEventListener('input', this.handleTokenInput);
     this.anytypeConnectButton.addEventListener('command', this.connectAnytype);
     this.anytypeDisconnectButton.addEventListener(
       'command',
@@ -147,6 +99,14 @@ class Preferences {
     );
     /* eslint-enable @typescript-eslint/no-misused-promises */
 
+    // Refresh the type menu whenever the selected space changes. Registered
+    // once here (not inside refreshAnytypeConnectionSection, which may run
+    // multiple times) to avoid stacking duplicate listeners.
+    this.anytypeSpaceMenu.addEventListener(
+      'command',
+      this.handleAnytypeSpaceChange,
+    );
+
     window.addEventListener('unload', () => {
       this.deinit();
     });
@@ -156,14 +116,9 @@ class Preferences {
 
     // Don't block window from loading while waiting for network responses
     setTimeout(() => {
-      void this.refreshNotionConnectionSection();
       void this.refreshAnytypeConnectionSection();
     }, 100);
 
-    this.eventManager.addListener(
-      'notion-connection.add',
-      this.handleNotionConnectionAdd,
-    );
     this.eventManager.addListener(
       'anytype-connection.add',
       this.handleAnytypeConnectionAdd,
@@ -172,20 +127,8 @@ class Preferences {
 
   private deinit(): void {
     this.eventManager.removeListener(
-      'notion-connection.add',
-      this.handleNotionConnectionAdd,
-    );
-    this.eventManager.removeListener(
       'anytype-connection.add',
       this.handleAnytypeConnectionAdd,
-    );
-  }
-
-  private async showError(error: unknown): Promise<void> {
-    this.notionError.hidden = false;
-    this.notionError.value = await getLocalizedErrorMessage(
-      error,
-      document.l10n,
     );
   }
 
@@ -241,183 +184,20 @@ class Preferences {
     return Boolean(addon?.isActive);
   }
 
-  private handleNotionConnectionAdd = () => {
-    void this.refreshNotionConnectionSection();
-  };
-
-  private async refreshNotionConnectionSection(): Promise<void> {
-    const connection = await this.notionAuthManager.getFirstConnection();
-    const legacyToken = this.notionAuthManager.getLegacyAuthToken();
-
-    const authToken = connection?.access_token || legacyToken;
-
-    this.notionError.hidden = true;
-
-    if (!authToken) {
-      this.notionConnectButton.hidden = false;
-      this.notionConnectionContainer.hidden = true;
-      return;
-    }
-
-    this.notionConnectionSpinner.setAttribute('status', 'animate');
-    this.notionTokenContainer.hidden = true;
-
-    try {
-      const notion = getNotionClient(authToken, window);
-
-      const user = await notion.users.me({});
-      const workspaceName =
-        (user.type === 'bot' && user.bot.workspace_name) || 'Connected';
-
-      document.l10n.setArgs(this.notionWorkspaceLabel, {
-        'workspace-name': workspaceName,
-      });
-
-      this.notionConnectButton.hidden = true;
-      this.notionUpgradeConnectionButton.hidden = Boolean(connection);
-      this.notionConnectionContainer.hidden = false;
-      this.notionConnectionSpinner.removeAttribute('status');
-
-      await this.refreshNotionDatabaseMenu(notion);
-    } catch (error) {
-      logger.error(error);
-
-      this.notionConnectionSpinner.removeAttribute('status');
-      await this.showError(error);
-
-      if (isNotionErrorWithCode(error, APIErrorCode.Unauthorized)) {
-        this.notionConnectButton.hidden = false;
-      }
-    }
-  }
-
-  private async refreshNotionDatabaseMenu(notion: Client): Promise<void> {
-    let menuItems: MenuItem[] = [];
-
-    this.notionDatabaseMenu.disabled = true;
-
-    try {
-      const databases = await this.retrieveNotionDatabases(notion);
-
-      menuItems = databases.map<MenuItem>((database) => {
-        const title = database.title.map((t) => t.plain_text).join('');
-        const icon =
-          database.icon?.type === 'emoji' ? database.icon.emoji : null;
-
-        return {
-          label: icon ? `${icon} ${title}` : title,
-          value: normalizeID(database.id),
-        };
-      });
-
-      this.notionDatabaseMenu.disabled = false;
-    } finally {
-      setMenuItems(this.notionDatabaseMenu, menuItems);
-    }
-  }
-
-  private async retrieveNotionDatabases(
-    notion: Client,
-  ): Promise<DatabaseObjectResponse[]> {
-    const response = await notion.search({
-      filter: { property: 'object', value: 'database' },
-    });
-
-    const databases = response.results.filter(isFullDatabase);
-
-    if (databases.length === 0) {
-      throw new LocalizableError(
-        'No Notion databases are accessible',
-        'notero-error-no-notion-databases',
-      );
-    }
-
-    return databases;
-  }
-
-  private connectNotion = async (event: XUL.CommandEvent): Promise<void> => {
-    const button = event.target as XUL.ButtonElement;
-
-    button.disabled = true;
-
-    window.addEventListener(
-      'blur',
-      () => {
-        button.disabled = false;
-        this.notionTokenContainer.hidden = false;
-      },
-      { once: true },
-    );
-
-    await this.notionAuthManager.openLogin();
-  };
-
-  private disconnectNotion = async (): Promise<void> => {
-    const dialogTitle =
-      (await document.l10n.formatValue(
-        'notero-preferences-notion-disconnect-dialog-title',
-      )) || 'Disconnect Notion Workspace';
-    const dialogText =
-      (await document.l10n.formatValue(
-        'notero-preferences-notion-disconnect-dialog-text',
-      )) || 'Disconnect workspace';
-
-    const confirmed = Services.prompt.confirm(null, dialogTitle, dialogText);
-    if (!confirmed) return;
-
-    await this.notionAuthManager.removeAllConnections();
-
-    await this.refreshNotionConnectionSection();
-  };
-
-  private upgradeNotionConnection = async (
-    event: XUL.CommandEvent,
-  ): Promise<void> => {
-    const dialogTitle =
-      (await document.l10n.formatValue(
-        'notero-preferences-notion-upgrade-dialog-title',
-      )) || 'Upgrade Notion Connection';
-    const dialogText =
-      (await document.l10n.formatValue(
-        'notero-preferences-notion-upgrade-dialog-text',
-      )) || 'Upgrade connection';
-
-    const confirmed = Services.prompt.confirm(null, dialogTitle, dialogText);
-    if (!confirmed) return;
-
-    // Ensure window blur listener works as expected
-    setTimeout(() => {
-      void this.connectNotion(event);
-    }, 100);
-  };
-
-  private handleTokenInput = async (event: Event): Promise<void> => {
-    const tokenInput = (event.target as HTMLInputElement).value.trim();
-    const params = new URLSearchParams(tokenInput);
-    try {
-      await this.notionAuthManager.handleTokenResponse(params);
-    } catch (error) {
-      logger.error(error);
-      await this.showError(error);
-    }
-  };
-
-  // Anytype methods
-
   private handleAnytypeConnectionAdd = () => {
     void this.refreshAnytypeConnectionSection();
   };
 
-  private async refreshAnytypeConnectionSection(): Promise<void> {
-    logger.debug('[Anytype] refreshAnytypeConnectionSection called');
-    const apiKey = await this.anytypeAuthManager.getOptionalApiKey();
+  private handleAnytypeSpaceChange = () => {
+    void this.initAnytypeTypeMenu();
+  };
 
-    logger.debug('[Anytype] API key present:', !!apiKey);
+  private async refreshAnytypeConnectionSection(): Promise<void> {
+    const apiKey = await this.anytypeAuthManager.getOptionalApiKey();
 
     this.anytypeError.hidden = true;
 
     if (!apiKey) {
-      logger.debug('[Anytype] No API key, showing connect button');
       this.anytypeConnectButton.hidden = false;
       this.anytypeConnectionContainer.hidden = true;
       this.anytypeAuthContainer.hidden = true;
@@ -427,14 +207,10 @@ class Preferences {
     this.anytypeConnectionSpinner.setAttribute('status', 'animate');
 
     try {
-      logger.debug('[Anytype] Creating client');
       const client = await this.anytypeAuthManager.createClient(window);
 
-      // Check if Anytype is available
-      logger.debug('[Anytype] Checking health');
       const isAvailable = await client.checkHealth();
-      logger.debug('[Anytype] Health check result:', isAvailable);
-      
+
       if (!isAvailable) {
         throw new LocalizableError(
           'Anytype is not running',
@@ -447,22 +223,10 @@ class Preferences {
       this.anytypeConnectionContainer.hidden = false;
       this.anytypeConnectionSpinner.removeAttribute('status');
 
-      logger.debug('[Anytype] Refreshing space menu');
       await this.refreshAnytypeSpaceMenu(client);
-      
-      logger.debug('[Anytype] Initializing type menu');
       await this.initAnytypeTypeMenu();
-
-      // Refresh types when space changes
-      logger.debug('[Anytype] Adding space change listener');
-      this.anytypeSpaceMenu.addEventListener('command', async () => {
-        logger.debug('[Anytype] Space changed, refreshing types');
-        // Wait a bit for the preference to be saved by XUL
-        await new Promise(resolve => setTimeout(resolve, 100));
-        await this.initAnytypeTypeMenu();
-      });
     } catch (error) {
-      logger.error('[Anytype] Error in refreshAnytypeConnectionSection:', error);
+      logger.error('Error in refreshAnytypeConnectionSection:', error);
 
       this.anytypeConnectionSpinner.removeAttribute('status');
       await this.showAnytypeError(error);
@@ -487,8 +251,6 @@ class Preferences {
 
     try {
       const spaces = await client.listSpaces();
-
-      logger.debug('Retrieved spaces:', spaces);
 
       if (spaces.length === 0) {
         logger.warn('No spaces returned from Anytype API');
@@ -522,23 +284,17 @@ class Preferences {
   }
 
   private async initAnytypeTypeMenu(): Promise<void> {
-    logger.debug('[Anytype] initAnytypeTypeMenu called');
     let menuItems: MenuItem[] = [];
 
     this.anytypeTypeMenu.disabled = true;
 
     try {
-      logger.debug('[Anytype] Creating Anytype client for type menu');
       const client = await this.anytypeAuthManager.createClient(window);
-      
+
       // Read directly from the menulist value, not from preferences
       const spaceId = this.anytypeSpaceMenu.value;
 
-      logger.debug('[Anytype] Current space ID from menu:', spaceId);
-
       if (!spaceId) {
-        // No space selected yet, show placeholder
-        logger.debug('[Anytype] No space selected, showing placeholder');
         menuItems = [
           {
             label: 'Select a space first',
@@ -547,13 +303,10 @@ class Preferences {
           },
         ];
       } else {
-        logger.debug('[Anytype] Fetching types for space:', spaceId);
         const types = await client.listObjectTypes(spaceId);
 
-        logger.debug('[Anytype] Retrieved types:', types);
-
         if (types.length === 0) {
-          logger.warn('[Anytype] No types returned from Anytype API');
+          logger.warn('No types returned from Anytype API');
           menuItems = [
             {
               label: 'No custom types found',
@@ -562,21 +315,15 @@ class Preferences {
             },
           ];
         } else {
-          logger.debug('[Anytype] Building menu items from', types.length, 'types');
-          // Create plain objects to avoid DeadObject issues
-          menuItems = [];
-          for (const type of types) {
-            logger.debug(`[Anytype] Adding type - key: "${type.key}", name: "${type.name}"`);
-            menuItems.push({
-              label: String(type.name || type.key),
-              value: String(type.key),
-            });
-          }
+          menuItems = types.map<MenuItem>((type) => ({
+            label: type.name || type.key,
+            value: type.key,
+          }));
           this.anytypeTypeMenu.disabled = false;
         }
       }
     } catch (error) {
-      logger.error('[Anytype] Failed to load Anytype object types:', error);
+      logger.error('Failed to load Anytype object types:', error);
       menuItems = [
         {
           label: 'Failed to load types',
@@ -585,7 +332,6 @@ class Preferences {
         },
       ];
     } finally {
-      logger.debug('[Anytype] Setting menu items:', menuItems);
       setMenuItems(this.anytypeTypeMenu, menuItems);
     }
   }
@@ -595,7 +341,6 @@ class Preferences {
     this.anytypeError.hidden = true;
 
     try {
-      // Check if Anytype is available
       const isAvailable =
         await this.anytypeAuthManager.checkAnytypeAvailable(window);
       if (!isAvailable) {
@@ -605,8 +350,7 @@ class Preferences {
         );
       }
 
-      const challenge = await this.anytypeAuthManager.startAuth(window);
-      this.anytypeCurrentChallenge = challenge.challenge_id;
+      await this.anytypeAuthManager.startAuth(window);
 
       // Show the auth container with code input
       this.anytypeConnectButton.hidden = true;

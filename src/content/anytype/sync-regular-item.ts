@@ -8,7 +8,11 @@ import { LocalizableError } from '../errors';
 import { PageTitleFormat } from '../prefs/notero-pref';
 import { logger } from '../utils';
 
-import type { AnytypeClient, AnytypeObject, AnytypeProperty } from './anytype-client';
+import type {
+  AnytypeClient,
+  AnytypeObject,
+  AnytypeProperty,
+} from './anytype-client';
 import {
   getAnytypeLinkAttachment,
   getAnytypeObjectID,
@@ -59,7 +63,16 @@ async function saveItemToSpace(
   });
 
   if (objectId) {
-    return updateObject(anytypeClient, spaceId, typeKey, objectId, name, body, properties, item);
+    return updateObject(
+      anytypeClient,
+      spaceId,
+      typeKey,
+      objectId,
+      name,
+      body,
+      properties,
+      item,
+    );
   }
 
   return createObject(anytypeClient, spaceId, typeKey, name, body, properties);
@@ -76,11 +89,11 @@ async function createObject(
   body: string,
   properties: AnytypeProperty[],
 ): Promise<AnytypeObject> {
-  logger.debug('Creating object in space', spaceId, { 
-    typeKey, 
-    name, 
-    body: body.substring(0, 100) + '...', 
-    properties 
+  logger.debug('Creating object in space', spaceId, {
+    typeKey,
+    name,
+    body: body.substring(0, 100) + '...',
+    properties,
   });
 
   try {
@@ -134,14 +147,16 @@ async function updateObject(
 
     // If object not found, remove the invalid attachment and create a new one
     if (isObjectNotFoundError(error)) {
-      logger.debug('Object not found or inaccessible, removing invalid attachment and creating new one');
-      
+      logger.debug(
+        'Object not found or inaccessible, removing invalid attachment and creating new one',
+      );
+
       // Remove the invalid attachment
       const attachment = getAnytypeLinkAttachment(item);
       if (attachment) {
         await Zotero.Items.erase([attachment.id]);
       }
-      
+
       return createObject(client, spaceId, typeKey, name, body, properties);
     }
 

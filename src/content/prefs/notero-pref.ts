@@ -7,8 +7,6 @@ export enum NoteroPref {
   anytypeSpaceId = 'anytypeSpaceId',
   anytypeTypeKey = 'anytypeTypeKey',
   collectionSyncConfigs = 'collectionSyncConfigs',
-  notionDatabaseID = 'notionDatabaseID',
-  notionToken = 'notionToken',
   pageTitleFormat = 'pageTitleFormat',
   syncNotes = 'syncNotes',
   syncOnModifyItems = 'syncOnModifyItems',
@@ -45,8 +43,6 @@ type NoteroPrefValue = Partial<{
   [NoteroPref.anytypeSpaceId]: string;
   [NoteroPref.anytypeTypeKey]: string;
   [NoteroPref.collectionSyncConfigs]: string;
-  [NoteroPref.notionDatabaseID]: string;
-  [NoteroPref.notionToken]: string;
   [NoteroPref.pageTitleFormat]: PageTitleFormat;
   [NoteroPref.syncNotes]: boolean;
   [NoteroPref.syncOnModifyItems]: boolean;
@@ -96,8 +92,6 @@ function convertRawPrefValue<P extends NoteroPref>(
     [NoteroPref.anytypeSpaceId]: stringPref,
     [NoteroPref.anytypeTypeKey]: stringPref,
     [NoteroPref.collectionSyncConfigs]: stringPref,
-    [NoteroPref.notionDatabaseID]: stringPref,
-    [NoteroPref.notionToken]: stringPref,
     [NoteroPref.pageTitleFormat]: pageTitleFormatPref,
     [NoteroPref.syncNotes]: booleanPref,
     [NoteroPref.syncOnModifyItems]: booleanPref,
