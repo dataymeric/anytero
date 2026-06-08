@@ -77,6 +77,7 @@ declare namespace XUL {
     label: LabelElement;
     menuitem: MenuItemElement;
     menulist: MenuListElement;
+    menuseparator: XULElement;
     preference: PreferenceElement;
     textbox: TextboxElement;
     tree: TreeElement;

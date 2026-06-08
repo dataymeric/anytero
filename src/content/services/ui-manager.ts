@@ -88,6 +88,16 @@ export class UIManager implements Service {
   }
 
   private initToolsMenuItem(window: Zotero.ZoteroWindow) {
+    const parentMenu = window.document.getElementById('menu_ToolsPopup');
+    if (!parentMenu) {
+      logger.error("Failed to find element 'menu_ToolsPopup'");
+      return;
+    }
+
+    const separator = createXULElement(window.document, 'menuseparator');
+    parentMenu.appendChild(separator);
+    this.addManagedElement(window, separator);
+
     this.createMenuItem({
       window,
       l10nId: 'anytero-tools-menu-preferences',

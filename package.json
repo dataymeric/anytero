@@ -43,8 +43,8 @@
   },
   "xpi": {
     "icons": {
-      "48": "content/style/notero-48.png",
-      "96": "content/style/notero-96.png"
+      "48": "content/style/anytero-48.png",
+      "96": "content/style/anytero-96.png"
     },
     "id": "anytero@vanoni.dev",
     "name": "Anytero",
