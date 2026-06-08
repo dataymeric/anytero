@@ -10,11 +10,9 @@ const ANYTYPE_TAG_NAME = 'anytype';
 const SYNCED_NOTES_ID = 'anytero-synced-notes';
 
 export type SyncedNotes = {
-  containerBlockID?: string;
   notes?: {
     [noteItemKey: Zotero.DataObjectKey]: {
-      blockID: string;
-      syncedAt?: Date;
+      syncedAt: Date;
     };
   };
 };
@@ -151,62 +149,42 @@ export function getSyncedNotesFromAttachment(
   const syncedNotesJSON = getSyncedNotesJSON(attachment);
   if (!syncedNotesJSON) return {};
 
-  const parsedValue = JSON.parse(syncedNotesJSON);
-
+  const parsedValue: unknown = JSON.parse(syncedNotesJSON);
   if (!isObject(parsedValue)) return {};
 
-  let containerBlockID;
   const notes: Required<SyncedNotes>['notes'] = {};
-
-  if (typeof parsedValue.containerBlockID === 'string') {
-    containerBlockID = parsedValue.containerBlockID;
-  }
 
   if (isObject(parsedValue.notes)) {
     Object.entries(parsedValue.notes).forEach(([key, value]) => {
       if (!isObject(value)) return;
-
-      const { blockID, syncedAt } = value;
-      if (typeof blockID !== 'string') return;
-
-      notes[key] = {
-        blockID,
-        syncedAt: typeof syncedAt === 'string' ? new Date(syncedAt) : undefined,
-      };
+      const { syncedAt } = value;
+      if (typeof syncedAt !== 'string') return;
+      notes[key] = { syncedAt: new Date(syncedAt) };
     });
   }
 
-  return { containerBlockID, notes };
+  return { notes };
 }
 
 /**
- * Save synced note information
+ * Record the set of notes that were included in the most recent rebuild of the
+ * item's Anytype object body. Overwrites the previous record so that deleted
+ * notes naturally drop out of tracking.
  */
-export async function saveSyncedNote(
+export async function saveSyncedNotes(
   item: Zotero.Item,
-  containerBlockID: string,
-  noteBlockID: string | undefined,
-  noteItemKey: Zotero.DataObjectKey,
-) {
+  noteKeys: string[],
+): Promise<void> {
   const attachment = getAnytypeLinkAttachment(item);
   if (!attachment) return;
 
-  const { notes } = getSyncedNotesFromAttachment(attachment);
+  const now = new Date();
+  const notes: Required<SyncedNotes>['notes'] = {};
+  noteKeys.forEach((key) => {
+    notes[key] = { syncedAt: now };
+  });
 
-  const syncedNotes = {
-    containerBlockID,
-    notes: {
-      ...notes,
-      ...(noteBlockID && {
-        [noteItemKey]: {
-          blockID: noteBlockID,
-          syncedAt: new Date(),
-        },
-      }),
-    },
-  };
-
-  updateAnytypeLinkAttachmentNote(attachment, syncedNotes);
+  updateAnytypeLinkAttachmentNote(attachment, { notes });
 
   await attachment.saveTx();
 }

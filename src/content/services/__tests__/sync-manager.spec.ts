@@ -110,11 +110,9 @@ regularItemNotInCollection.getNotes.mockReturnValue([
 mockedGetSyncedNotes.mockReturnValue({
   notes: {
     [syncedNoteItem.key]: {
-      blockID: 'block1',
       syncedAt: new Date(syncedNoteItem.dateModified),
     },
     [outOfSyncNoteItem.key]: {
-      blockID: 'block2',
       syncedAt: new Date(
         new Date(outOfSyncNoteItem.dateModified).getTime() - 10_000,
       ),
