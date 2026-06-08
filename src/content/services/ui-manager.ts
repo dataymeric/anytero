@@ -10,14 +10,17 @@ const FTL_FILE = 'anytero.ftl';
 export class UIManager implements Service {
   private eventManager!: EventManager;
   private preferencePaneManager!: PreferencePaneManager;
+  private rootURI!: string;
 
   private managedWindows = new Map<Zotero.ZoteroWindow, Set<Element>>();
 
   public startup({
     dependencies,
+    pluginInfo,
   }: ServiceParams<'eventManager' | 'preferencePaneManager'>) {
     this.eventManager = dependencies.eventManager;
     this.preferencePaneManager = dependencies.preferencePaneManager;
+    this.rootURI = pluginInfo.rootURI;
   }
 
   public addToWindow(window: Zotero.ZoteroWindow) {
@@ -98,7 +101,7 @@ export class UIManager implements Service {
     parentMenu.appendChild(separator);
     this.addManagedElement(window, separator);
 
-    this.createMenuItem({
+    const menuItem = this.createMenuItem({
       window,
       l10nId: 'anytero-tools-menu-preferences',
       parentId: 'menu_ToolsPopup',
@@ -106,6 +109,14 @@ export class UIManager implements Service {
         this.preferencePaneManager.openPreferences();
       },
     });
+
+    if (menuItem) {
+      menuItem.classList.add('menuitem-iconic');
+      menuItem.setAttribute(
+        'image',
+        `${this.rootURI}content/style/anytero-16.png`,
+      );
+    }
   }
 
   private createMenuItem({
