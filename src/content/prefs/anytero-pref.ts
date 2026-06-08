@@ -1,7 +1,7 @@
 import { FluentMessageId } from '../../locale/fluent-types';
 import { MissingPrefError } from '../errors';
 
-export enum NoteroPref {
+export enum AnyteroPref {
   anytypeApiKey = 'anytypeApiKey',
   anytypeLibraryCollectionId = 'anytypeLibraryCollectionId',
   anytypeSpaceId = 'anytypeSpaceId',
@@ -26,30 +26,31 @@ export const PAGE_TITLE_FORMAT_L10N_IDS: Record<
   FluentMessageId
 > = {
   [PageTitleFormat.itemAuthorDateCitation]:
-    'notero-page-title-format-item-author-date-citation',
+    'anytero-page-title-format-item-author-date-citation',
   [PageTitleFormat.itemCitationKey]:
-    'notero-page-title-format-item-citation-key',
+    'anytero-page-title-format-item-citation-key',
   [PageTitleFormat.itemFullCitation]:
-    'notero-page-title-format-item-full-citation',
+    'anytero-page-title-format-item-full-citation',
   [PageTitleFormat.itemInTextCitation]:
-    'notero-page-title-format-item-in-text-citation',
-  [PageTitleFormat.itemShortTitle]: 'notero-page-title-format-item-short-title',
-  [PageTitleFormat.itemTitle]: 'notero-page-title-format-item-title',
+    'anytero-page-title-format-item-in-text-citation',
+  [PageTitleFormat.itemShortTitle]:
+    'anytero-page-title-format-item-short-title',
+  [PageTitleFormat.itemTitle]: 'anytero-page-title-format-item-title',
 };
 
-type NoteroPrefValue = Partial<{
-  [NoteroPref.anytypeApiKey]: string;
-  [NoteroPref.anytypeLibraryCollectionId]: string;
-  [NoteroPref.anytypeSpaceId]: string;
-  [NoteroPref.anytypeTypeKey]: string;
-  [NoteroPref.collectionSyncConfigs]: string;
-  [NoteroPref.pageTitleFormat]: PageTitleFormat;
-  [NoteroPref.syncNotes]: boolean;
-  [NoteroPref.syncOnModifyItems]: boolean;
+type AnyteroPrefValue = Partial<{
+  [AnyteroPref.anytypeApiKey]: string;
+  [AnyteroPref.anytypeLibraryCollectionId]: string;
+  [AnyteroPref.anytypeSpaceId]: string;
+  [AnyteroPref.anytypeTypeKey]: string;
+  [AnyteroPref.collectionSyncConfigs]: string;
+  [AnyteroPref.pageTitleFormat]: PageTitleFormat;
+  [AnyteroPref.syncNotes]: boolean;
+  [AnyteroPref.syncOnModifyItems]: boolean;
 }>;
 
-function buildFullPrefName(pref: NoteroPref): string {
-  return `extensions.notero.${pref}`;
+function buildFullPrefName(pref: AnyteroPref): string {
+  return `extensions.anytero.${pref}`;
 }
 
 function getBooleanPref(value: Zotero.Prefs.Value): boolean | undefined {
@@ -75,60 +76,60 @@ function getPageTitleFormatPref(
   return isPageTitleFormat(value) ? value : undefined;
 }
 
-function convertRawPrefValue<P extends NoteroPref>(
+function convertRawPrefValue<P extends AnyteroPref>(
   pref: P,
   value: Zotero.Prefs.Value,
-): NoteroPrefValue[P] {
+): AnyteroPrefValue[P] {
   const booleanPref = getBooleanPref(value);
   const stringPref = getStringPref(value);
 
   const pageTitleFormatPref =
-    (pref === NoteroPref.pageTitleFormat && getPageTitleFormatPref(value)) ||
+    (pref === AnyteroPref.pageTitleFormat && getPageTitleFormatPref(value)) ||
     undefined;
 
   return {
-    [NoteroPref.anytypeApiKey]: stringPref,
-    [NoteroPref.anytypeLibraryCollectionId]: stringPref,
-    [NoteroPref.anytypeSpaceId]: stringPref,
-    [NoteroPref.anytypeTypeKey]: stringPref,
-    [NoteroPref.collectionSyncConfigs]: stringPref,
-    [NoteroPref.pageTitleFormat]: pageTitleFormatPref,
-    [NoteroPref.syncNotes]: booleanPref,
-    [NoteroPref.syncOnModifyItems]: booleanPref,
+    [AnyteroPref.anytypeApiKey]: stringPref,
+    [AnyteroPref.anytypeLibraryCollectionId]: stringPref,
+    [AnyteroPref.anytypeSpaceId]: stringPref,
+    [AnyteroPref.anytypeTypeKey]: stringPref,
+    [AnyteroPref.collectionSyncConfigs]: stringPref,
+    [AnyteroPref.pageTitleFormat]: pageTitleFormatPref,
+    [AnyteroPref.syncNotes]: booleanPref,
+    [AnyteroPref.syncOnModifyItems]: booleanPref,
   }[pref];
 }
 
-export function clearNoteroPref(pref: NoteroPref): void {
+export function clearAnyteroPref(pref: AnyteroPref): void {
   Zotero.Prefs.clear(buildFullPrefName(pref), true);
 }
 
-export function getNoteroPref<P extends NoteroPref>(
+export function getAnyteroPref<P extends AnyteroPref>(
   pref: P,
-): NoteroPrefValue[P] {
+): AnyteroPrefValue[P] {
   const value = Zotero.Prefs.get(buildFullPrefName(pref), true);
   return convertRawPrefValue(pref, value);
 }
 
-export function getRequiredNoteroPref<P extends NoteroPref>(
+export function getRequiredAnyteroPref<P extends AnyteroPref>(
   pref: P,
-): NonNullable<NoteroPrefValue[P]> {
-  const value = getNoteroPref(pref);
+): NonNullable<AnyteroPrefValue[P]> {
+  const value = getAnyteroPref(pref);
 
   if (value) return value;
 
   throw new MissingPrefError(pref);
 }
 
-export function setNoteroPref<P extends NoteroPref>(
+export function setAnyteroPref<P extends AnyteroPref>(
   pref: P,
-  value: NoteroPrefValue[P],
+  value: AnyteroPrefValue[P],
 ): void {
   Zotero.Prefs.set(buildFullPrefName(pref), value, true);
 }
 
-export function registerNoteroPrefObserver<P extends NoteroPref>(
+export function registerAnyteroPrefObserver<P extends AnyteroPref>(
   pref: P,
-  handler: (value: NoteroPrefValue[P]) => void,
+  handler: (value: AnyteroPrefValue[P]) => void,
 ): symbol {
   return Zotero.Prefs.registerObserver(
     buildFullPrefName(pref),
@@ -139,6 +140,6 @@ export function registerNoteroPrefObserver<P extends NoteroPref>(
   );
 }
 
-export function unregisterNoteroPrefObserver(symbol: symbol): void {
+export function unregisterAnyteroPrefObserver(symbol: symbol): void {
   Zotero.Prefs.unregisterObserver(symbol);
 }

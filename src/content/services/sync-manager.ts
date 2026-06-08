@@ -1,7 +1,7 @@
 import { performAnytypeSyncJob, type AnytypeClient } from '../anytype';
 import { getSyncedNotes } from '../anytype/item-data';
+import { getAnyteroPref, AnyteroPref } from '../prefs/anytero-pref';
 import { loadSyncEnabledCollectionIDs } from '../prefs/collection-sync-config';
-import { getNoteroPref, NoteroPref } from '../prefs/notero-pref';
 import { getAllCollectionItems, logger, parseItemDate } from '../utils';
 
 import type { EventManager, NotifierEventParams } from './event-manager';
@@ -106,8 +106,8 @@ export class SyncManager implements Service {
   private getItemsForNotifierEvent(
     ...[event, ids]: NotifierEventParams
   ): Zotero.Item[] {
-    const syncOnModifyItems = getNoteroPref(NoteroPref.syncOnModifyItems);
-    const syncNotes = getNoteroPref(NoteroPref.syncNotes);
+    const syncOnModifyItems = getAnyteroPref(AnyteroPref.syncOnModifyItems);
+    const syncNotes = getAnyteroPref(AnyteroPref.syncNotes);
 
     if (!syncOnModifyItems && event !== 'collection-item.add') {
       return [];
@@ -159,7 +159,7 @@ export class SyncManager implements Service {
   }
 
   private getNotesToSync(items: Zotero.Item[]): Zotero.Item[] {
-    const syncNotes = getNoteroPref(NoteroPref.syncNotes);
+    const syncNotes = getAnyteroPref(AnyteroPref.syncNotes);
     if (!syncNotes) return [];
 
     const notesToSync: Zotero.Item[] = [];
@@ -259,7 +259,7 @@ export class SyncManager implements Service {
     this.queuedSync = undefined as QueuedSync | undefined;
     this.syncInProgress = true;
 
-    const anytypeSpaceId = getNoteroPref(NoteroPref.anytypeSpaceId);
+    const anytypeSpaceId = getAnyteroPref(AnyteroPref.anytypeSpaceId);
 
     try {
       if (anytypeSpaceId) {

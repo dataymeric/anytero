@@ -221,7 +221,7 @@ function updateAnytypeLinkAttachmentNote(
   let note = `
 <h2 style="background-color: #ff666680;">Do not modify or delete!</h2>
 <p>This link attachment serves as a reference for
-<a href="https://github.com/dvanoni/notero">Anytero</a>
+<a href="https://github.com/dvanoni/anytero">Anytero</a>
 so that it can properly update the Anytype object for this item.</p>
 <p>Last synced: ${new Date().toLocaleString()}</p>
 `;

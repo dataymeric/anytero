@@ -1,8 +1,8 @@
-import type { ZoteroWithNotero } from './content/notero';
+import type { ZoteroWithAnytero } from './content/anytero';
 
-declare const Zotero: ZoteroWithNotero;
+declare const Zotero: ZoteroWithAnytero;
 
-const LOG_PREFIX = '[Notero] ';
+const LOG_PREFIX = '[Anytero] ';
 
 function log(msg: string) {
   Zotero.debug(`${LOG_PREFIX}${msg}`);
@@ -40,9 +40,9 @@ async function startup(
 ) {
   log(`Starting v${version}`);
 
-  Services.scriptloader.loadSubScript(rootURI + 'content/notero.js');
+  Services.scriptloader.loadSubScript(rootURI + 'content/anytero.js');
 
-  await Zotero.Notero?.startup({ pluginID: id, rootURI, version });
+  await Zotero.Anytero?.startup({ pluginID: id, rootURI, version });
 }
 
 /**
@@ -52,7 +52,7 @@ async function startup(
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function onMainWindowLoad({ window }: { window: Zotero.ZoteroWindow }) {
-  Zotero.Notero?.addToWindow(window);
+  Zotero.Anytero?.addToWindow(window);
 }
 
 /**
@@ -62,7 +62,7 @@ function onMainWindowLoad({ window }: { window: Zotero.ZoteroWindow }) {
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function onMainWindowUnload({ window }: { window: Zotero.ZoteroWindow }) {
-  Zotero.Notero?.removeFromWindow(window);
+  Zotero.Anytero?.removeFromWindow(window);
 }
 
 /**
@@ -75,9 +75,9 @@ function onMainWindowUnload({ window }: { window: Zotero.ZoteroWindow }) {
 function shutdown({ version }: BootstrapData, _reason: Zotero.Plugins.REASONS) {
   log(`Shutting down v${version}`);
 
-  Zotero.Notero?.shutdown();
+  Zotero.Anytero?.shutdown();
 
-  delete Zotero.Notero;
+  delete Zotero.Anytero;
 }
 
 /**

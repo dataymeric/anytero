@@ -8,13 +8,13 @@ import { LocalizableError } from '../errors';
 import type { EventManager } from '../services';
 import {
   createXULElement,
-  getGlobalNotero,
+  getGlobalAnytero,
   getLocalizedErrorMessage,
   getXULElementById,
   logger,
 } from '../utils';
 
-import { PAGE_TITLE_FORMAT_L10N_IDS, PageTitleFormat } from './notero-pref';
+import { PAGE_TITLE_FORMAT_L10N_IDS, PageTitleFormat } from './anytero-pref';
 import { SyncConfigsTable } from './sync-configs-table';
 
 type ReactDOMClient = typeof ReactDOM & { createRoot: typeof createRoot };
@@ -60,31 +60,31 @@ class Preferences {
   public async init(): Promise<void> {
     await Zotero.uiReadyPromise;
 
-    this.eventManager = getGlobalNotero().eventManager;
-    this.anytypeAuthManager = getGlobalNotero().anytypeAuthManager;
+    this.eventManager = getGlobalAnytero().eventManager;
+    this.anytypeAuthManager = getGlobalAnytero().anytypeAuthManager;
 
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
     this.anytypeConnectionContainer = getXULElementById(
-      'notero-anytypeConnection-container',
+      'anytero-anytypeConnection-container',
     )!;
     this.anytypeConnectionSpinner = getXULElementById(
-      'notero-anytypeConnection-spinner',
+      'anytero-anytypeConnection-spinner',
     )!;
-    this.anytypeConnectButton = getXULElementById('notero-anytypeConnect')!;
+    this.anytypeConnectButton = getXULElementById('anytero-anytypeConnect')!;
     this.anytypeDisconnectButton = getXULElementById(
-      'notero-anytypeDisconnect',
+      'anytero-anytypeDisconnect',
     )!;
     this.anytypeAuthContainer = getXULElementById(
-      'notero-anytypeAuth-container',
+      'anytero-anytypeAuth-container',
     )!;
     this.anytypeCodeInput = document.getElementById(
-      'notero-anytypeCode',
+      'anytero-anytypeCode',
     ) as HTMLInputElement;
-    this.anytypeVerifyButton = getXULElementById('notero-anytypeVerify')!;
-    this.anytypeSpaceMenu = getXULElementById('notero-anytypeSpace')!;
-    this.anytypeTypeMenu = getXULElementById('notero-anytypeType')!;
-    this.anytypeError = getXULElementById('notero-anytypeError')!;
-    this.pageTitleFormatMenu = getXULElementById('notero-pageTitleFormat')!;
+    this.anytypeVerifyButton = getXULElementById('anytero-anytypeVerify')!;
+    this.anytypeSpaceMenu = getXULElementById('anytero-anytypeSpace')!;
+    this.anytypeTypeMenu = getXULElementById('anytero-anytypeType')!;
+    this.anytypeError = getXULElementById('anytero-anytypeError')!;
+    this.pageTitleFormatMenu = getXULElementById('anytero-pageTitleFormat')!;
     /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
     /* eslint-disable @typescript-eslint/no-misused-promises */
@@ -151,13 +151,13 @@ class Preferences {
   private async initSyncConfigsTable(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const syncConfigsTableContainer = document.getElementById(
-      'notero-syncConfigsTable-container',
+      'anytero-syncConfigsTable-container',
     )!;
     const collection = await document.l10n.formatValue(
-      'notero-preferences-collection-column',
+      'anytero-preferences-collection-column',
     );
     const syncEnabled = await document.l10n.formatValue(
-      'notero-preferences-sync-enabled-column',
+      'anytero-preferences-sync-enabled-column',
     );
     const columnLabels = {
       collectionFullName: collection || 'Collection',
@@ -214,7 +214,7 @@ class Preferences {
       if (!isAvailable) {
         throw new LocalizableError(
           'Anytype is not running',
-          'notero-error-anytype-auth-start-failed',
+          'anytero-error-anytype-auth-start-failed',
         );
       }
 
@@ -346,7 +346,7 @@ class Preferences {
       if (!isAvailable) {
         throw new LocalizableError(
           'Anytype desktop app is not running',
-          'notero-error-anytype-auth-start-failed',
+          'anytero-error-anytype-auth-start-failed',
         );
       }
 
@@ -390,11 +390,11 @@ class Preferences {
   private disconnectAnytype = async (): Promise<void> => {
     const dialogTitle =
       (await document.l10n.formatValue(
-        'notero-preferences-anytype-disconnect-dialog-title',
+        'anytero-preferences-anytype-disconnect-dialog-title',
       )) || 'Disconnect Anytype';
     const dialogText =
       (await document.l10n.formatValue(
-        'notero-preferences-anytype-disconnect-dialog-text',
+        'anytero-preferences-anytype-disconnect-dialog-text',
       )) || 'Disconnect from Anytype';
 
     const confirmed = Services.prompt.confirm(null, dialogTitle, dialogText);
@@ -406,8 +406,9 @@ class Preferences {
   };
 }
 
-type WindowWithNoteroPreferences = typeof window & {
-  Notero_Preferences: Preferences;
+type WindowWithAnyteroPreferences = typeof window & {
+  Anytero_Preferences: Preferences;
 };
 
-(window as WindowWithNoteroPreferences).Notero_Preferences = new Preferences();
+(window as WindowWithAnyteroPreferences).Anytero_Preferences =
+  new Preferences();

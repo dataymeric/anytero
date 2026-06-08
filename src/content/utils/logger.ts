@@ -2,7 +2,7 @@ type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 type ProxiedMethod = keyof typeof PROXIED_METHODS;
 
-const LOG_PREFIX = '[Notero]';
+const LOG_PREFIX = '[Anytero]';
 
 const STYLED_LOG_PREFIX = [
   `%c${LOG_PREFIX}`,

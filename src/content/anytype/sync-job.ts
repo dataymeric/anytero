@@ -7,11 +7,11 @@
 import { APA_STYLE } from '../constants';
 import { ItemSyncError } from '../errors';
 import {
-  NoteroPref,
+  AnyteroPref,
   PageTitleFormat,
-  getNoteroPref,
-  getRequiredNoteroPref,
-} from '../prefs/notero-pref';
+  getAnyteroPref,
+  getRequiredAnyteroPref,
+} from '../prefs/anytero-pref';
 import { ProgressWindow } from '../sync/progress-window';
 import { getLocalizedErrorMessage, logger } from '../utils';
 
@@ -57,8 +57,8 @@ async function prepareSyncJob(
   getAnytypeClient: () => Promise<AnytypeClient>,
 ): Promise<AnytypeSyncJobParams> {
   const anytypeClient = await getAnytypeClient();
-  const spaceId = getRequiredNoteroPref(NoteroPref.anytypeSpaceId);
-  const typeKey = getNoteroPref(NoteroPref.anytypeTypeKey) || 'page';
+  const spaceId = getRequiredAnyteroPref(AnyteroPref.anytypeSpaceId);
+  const typeKey = getAnyteroPref(AnyteroPref.anytypeTypeKey) || 'page';
   logger.debug('Retrieved typeKey from preferences:', typeKey);
   const citationFormat = getCitationFormat();
   const pageTitleFormat = getPageTitleFormat();
@@ -96,7 +96,9 @@ function getCitationFormat(): string {
  * Get page title format from preferences
  */
 function getPageTitleFormat(): PageTitleFormat {
-  return getNoteroPref(NoteroPref.pageTitleFormat) || PageTitleFormat.itemTitle;
+  return (
+    getAnyteroPref(AnyteroPref.pageTitleFormat) || PageTitleFormat.itemTitle
+  );
 }
 
 /**

@@ -14,7 +14,7 @@ type CleanupFunction = () => Promise<void>;
 const TARGET = 'firefox115';
 
 const buildPlugin: Plugin = {
-  name: 'notero-build-plugin',
+  name: 'anytero-build-plugin',
   setup(build) {
     build.onStart(() => {
       console.log(
@@ -40,7 +40,10 @@ export async function build({
 
   const contentContext = await esbuild.context({
     bundle: true,
-    entryPoints: ['src/content/notero.ts', 'src/content/prefs/preferences.tsx'],
+    entryPoints: [
+      'src/content/anytero.ts',
+      'src/content/prefs/preferences.tsx',
+    ],
     external: ['components/*', 'react', 'react-dom'],
     format: 'iife',
     outbase: 'src',

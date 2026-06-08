@@ -1,6 +1,6 @@
 import type { FluentMessageId } from '../../locale/fluent-types';
 
-export type ErrorL10nId = FluentMessageId & `notero-error-${string}`;
+export type ErrorL10nId = FluentMessageId & `anytero-error-${string}`;
 
 export class LocalizableError extends Error {
   public readonly name: string = 'LocalizableError';

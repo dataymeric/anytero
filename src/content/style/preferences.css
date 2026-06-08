@@ -1,34 +1,25 @@
-.notero-error {
+.anytero-error {
   color: var(--accent-red);
   white-space: normal;
 }
 
-.notero-groupbox hbox > :not(:last-child) {
+.anytero-groupbox hbox > :not(:last-child) {
   margin-inline-end: 5px;
 }
 
-.notero-groupbox vbox > * {
+.anytero-groupbox vbox > * {
   max-width: 100%;
 }
 
-.notero-margin-block-start {
+.anytero-margin-block-start {
   margin-block-start: 0.5em;
 }
 
-.notero-margin-block-end {
+.anytero-margin-block-end {
   margin-block-end: 0.5em;
 }
 
-#notero-notionToken {
-  flex: 1;
-  font-family: monospace;
-}
-
-#notero-notionDatabase {
-  overflow: hidden;
-}
-
-#notero-syncConfigsTable-container {
+#anytero-syncConfigsTable-container {
   height: 250px;
   max-height: 250px;
 }

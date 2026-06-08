@@ -6,7 +6,7 @@
 
 import type { AnytypeProperty } from '../anytype';
 import { NOTION_TAG_NAME } from '../constants';
-import { PageTitleFormat } from '../prefs/notero-pref';
+import { PageTitleFormat } from '../prefs/anytero-pref';
 import {
   buildCollectionFullName,
   getItemURL,

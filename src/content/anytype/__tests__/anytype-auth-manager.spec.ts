@@ -19,10 +19,10 @@ vi.mock('../storage', () => ({
   removeApiKey: vi.fn(),
 }));
 
-vi.mock('../prefs/notero-pref', () => ({
-  clearNoteroPref: vi.fn(),
-  getNoteroPref: vi.fn(),
-  NoteroPref: {
+vi.mock('../prefs/anytero-pref', () => ({
+  clearAnyteroPref: vi.fn(),
+  getAnyteroPref: vi.fn(),
+  AnyteroPref: {
     anytypeApiKey: 'anytypeApiKey',
   },
 }));

@@ -62,7 +62,7 @@ export class EventManager implements Service {
     this.observerID = Zotero.Notifier.registerObserver(
       this.observer,
       ['collection', 'collection-item', 'item', 'item-tag'],
-      'notero',
+      'anytero',
     );
   }
 

@@ -7,10 +7,10 @@
 
 import { LocalizableError } from '../errors';
 import {
-  clearNoteroPref,
-  getNoteroPref,
-  NoteroPref,
-} from '../prefs/notero-pref';
+  clearAnyteroPref,
+  getAnyteroPref,
+  AnyteroPref,
+} from '../prefs/anytero-pref';
 import type {
   EventManager,
   PreferencePaneManager,
@@ -74,7 +74,7 @@ export class AnytypeAuthManager implements Service {
       logger.error('Failed to start auth challenge:', error);
       throw new LocalizableError(
         'Failed to start Anytype authentication',
-        'notero-error-anytype-auth-start-failed',
+        'anytero-error-anytype-auth-start-failed',
       );
     }
   }
@@ -86,7 +86,7 @@ export class AnytypeAuthManager implements Service {
     if (!this.currentSession) {
       throw new LocalizableError(
         'No active auth session',
-        'notero-error-anytype-no-auth-session',
+        'anytero-error-anytype-no-auth-session',
       );
     }
 
@@ -100,7 +100,7 @@ export class AnytypeAuthManager implements Service {
       await saveApiKey(apiKey);
 
       // Clear any legacy prefs
-      clearNoteroPref(NoteroPref.anytypeApiKey);
+      clearAnyteroPref(AnyteroPref.anytypeApiKey);
 
       this.currentSession = null;
       this.preferencePaneManager.openPreferences();
@@ -111,7 +111,7 @@ export class AnytypeAuthManager implements Service {
       logger.error('Failed to complete auth:', error);
       throw new LocalizableError(
         'Failed to complete Anytype authentication',
-        'notero-error-anytype-auth-complete-failed',
+        'anytero-error-anytype-auth-complete-failed',
       );
     }
   }
@@ -152,7 +152,7 @@ export class AnytypeAuthManager implements Service {
    * Get legacy API key from preferences (for migration)
    */
   public getLegacyApiKey(): string | undefined {
-    return getNoteroPref(NoteroPref.anytypeApiKey);
+    return getAnyteroPref(AnyteroPref.anytypeApiKey);
   }
 
   /**
@@ -172,7 +172,7 @@ export class AnytypeAuthManager implements Service {
 
     throw new LocalizableError(
       'Anytype API key not available',
-      'notero-error-missing-anytype-api-key',
+      'anytero-error-missing-anytype-api-key',
     );
   }
 
@@ -180,7 +180,7 @@ export class AnytypeAuthManager implements Service {
    * Remove all stored API keys
    */
   public async removeAllApiKeys(): Promise<void> {
-    clearNoteroPref(NoteroPref.anytypeApiKey);
+    clearAnyteroPref(AnyteroPref.anytypeApiKey);
 
     for (const key of await this.getAllApiKeys()) {
       await this.removeApiKey(key);

@@ -5,7 +5,7 @@ import type { EventManager } from './event-manager';
 import type { PreferencePaneManager } from './preference-pane-manager';
 import type { Service, ServiceParams } from './service';
 
-const FTL_FILE = 'notero.ftl';
+const FTL_FILE = 'anytero.ftl';
 
 export class UIManager implements Service {
   private eventManager!: EventManager;
@@ -54,7 +54,7 @@ export class UIManager implements Service {
   private initCollectionMenuItem(window: Zotero.ZoteroWindow) {
     this.createMenuItem({
       window,
-      l10nId: 'notero-collection-menu-sync',
+      l10nId: 'anytero-collection-menu-sync',
       parentId: 'zotero-collectionmenu',
       onCommand: () => {
         const collection =
@@ -70,7 +70,7 @@ export class UIManager implements Service {
   private initItemMenuItem(window: Zotero.ZoteroWindow) {
     this.createMenuItem({
       window,
-      l10nId: 'notero-item-menu-sync',
+      l10nId: 'anytero-item-menu-sync',
       parentId: 'zotero-itemmenu',
       onCommand: () => {
         const items = Zotero.getActiveZoteroPane()?.getSelectedItems(false);
@@ -90,7 +90,7 @@ export class UIManager implements Service {
   private initToolsMenuItem(window: Zotero.ZoteroWindow) {
     this.createMenuItem({
       window,
-      l10nId: 'notero-tools-menu-preferences',
+      l10nId: 'anytero-tools-menu-preferences',
       parentId: 'menu_ToolsPopup',
       onCommand: () => {
         this.preferencePaneManager.openPreferences();

@@ -10,7 +10,7 @@ import {
 } from './services';
 import { logger } from './utils';
 
-export class Notero {
+export class Anytero {
   public readonly eventManager: EventManager;
   public readonly anytypeAuthManager: AnytypeAuthManager;
 
@@ -115,6 +115,6 @@ export class Notero {
   }
 }
 
-export type ZoteroWithNotero = Zotero & { Notero?: Notero };
+export type ZoteroWithAnytero = Zotero & { Anytero?: Anytero };
 
-(Zotero as ZoteroWithNotero).Notero = new Notero();
+(Zotero as ZoteroWithAnytero).Anytero = new Anytero();

@@ -9,8 +9,8 @@ import {
 } from '../../../../test/utils';
 import { AnytypeAuthManager, performAnytypeSyncJob } from '../../anytype';
 import { getSyncedNotes } from '../../anytype/item-data';
+import { AnyteroPref, setAnyteroPref } from '../../prefs/anytero-pref';
 import { saveSyncConfigs } from '../../prefs/collection-sync-config';
-import { NoteroPref, setNoteroPref } from '../../prefs/notero-pref';
 import { parseItemDate } from '../../utils';
 import { EventManager, SyncManager } from '../index';
 
@@ -147,9 +147,9 @@ function setup({
 
   saveSyncConfigs({ [collection.id]: { syncEnabled: collectionSyncEnabled } });
 
-  setNoteroPref(NoteroPref.syncNotes, syncNotes);
-  setNoteroPref(NoteroPref.syncOnModifyItems, syncOnModifyItems);
-  setNoteroPref(NoteroPref.anytypeSpaceId, 'test-space-id');
+  setAnyteroPref(AnyteroPref.syncNotes, syncNotes);
+  setAnyteroPref(AnyteroPref.syncOnModifyItems, syncOnModifyItems);
+  setAnyteroPref(AnyteroPref.anytypeSpaceId, 'test-space-id');
 
   return { eventManager };
 }

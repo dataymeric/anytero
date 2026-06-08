@@ -1,16 +1,16 @@
-import type { NoteroPref } from '../prefs/notero-pref';
+import type { AnyteroPref } from '../prefs/anytero-pref';
 
 import { ErrorL10nId, LocalizableError } from './LocalizableError';
 
-const L10N_IDS: Partial<Record<NoteroPref, ErrorL10nId>> = {};
+const L10N_IDS: Partial<Record<AnyteroPref, ErrorL10nId>> = {};
 
 export class MissingPrefError extends LocalizableError {
   public readonly name = 'MissingPrefError';
 
-  public constructor(pref: NoteroPref) {
+  public constructor(pref: AnyteroPref) {
     super(
       `Missing pref: ${pref}`,
-      L10N_IDS[pref] || 'notero-error-missing-pref',
+      L10N_IDS[pref] || 'anytero-error-missing-pref',
       { l10nArgs: { pref } },
     );
   }

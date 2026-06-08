@@ -6,7 +6,11 @@
  */
 
 import { LocalizableError } from '../errors';
-import { NoteroPref, getNoteroPref, setNoteroPref } from '../prefs/notero-pref';
+import {
+  AnyteroPref,
+  getAnyteroPref,
+  setAnyteroPref,
+} from '../prefs/anytero-pref';
 import { logger } from '../utils';
 
 import type { AnytypeClient, AnytypeObject } from './anytype-client';
@@ -26,8 +30,8 @@ export async function getOrCreateLibraryCollection(
   spaceId: string,
 ): Promise<AnytypeObject> {
   // Check if we have a stored collection ID
-  const storedCollectionId = getNoteroPref(
-    NoteroPref.anytypeLibraryCollectionId,
+  const storedCollectionId = getAnyteroPref(
+    AnyteroPref.anytypeLibraryCollectionId,
   );
 
   if (storedCollectionId) {
@@ -62,8 +66,8 @@ export async function getOrCreateLibraryCollection(
         'Found library collection by search:',
         existingCollection.id,
       );
-      setNoteroPref(
-        NoteroPref.anytypeLibraryCollectionId,
+      setAnyteroPref(
+        AnyteroPref.anytypeLibraryCollectionId,
         existingCollection.id,
       );
       return existingCollection;
@@ -98,7 +102,7 @@ async function createLibraryCollection(
     });
 
     // Store the collection ID for future use
-    setNoteroPref(NoteroPref.anytypeLibraryCollectionId, collection.id);
+    setAnyteroPref(AnyteroPref.anytypeLibraryCollectionId, collection.id);
 
     logger.info('Created library collection:', collection.id);
     return collection;
@@ -106,7 +110,7 @@ async function createLibraryCollection(
     logger.error('Failed to create library collection:', error);
     throw new LocalizableError(
       'Failed to create library collection in Anytype',
-      'notero-error-anytype-create-collection-failed',
+      'anytero-error-anytype-create-collection-failed',
     );
   }
 }
@@ -116,6 +120,6 @@ async function createLibraryCollection(
  * This can be used when resetting the sync configuration
  */
 export function clearLibraryCollectionId(): void {
-  setNoteroPref(NoteroPref.anytypeLibraryCollectionId, undefined);
+  setAnyteroPref(AnyteroPref.anytypeLibraryCollectionId, undefined);
   logger.debug('Cleared library collection ID from preferences');
 }

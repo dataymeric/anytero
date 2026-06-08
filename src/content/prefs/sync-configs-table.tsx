@@ -174,7 +174,7 @@ export class SyncConfigsTable extends React.Component<Props> {
 
     return (
       <VirtualizedTable
-        id="notero-syncConfigsTable"
+        id="anytero-syncConfigsTable"
         columns={columns}
         getRowCount={this.getRowCount}
         getRowString={this.getRowString}

@@ -5,7 +5,7 @@
  */
 
 import { LocalizableError } from '../errors';
-import { PageTitleFormat } from '../prefs/notero-pref';
+import { PageTitleFormat } from '../prefs/anytero-pref';
 import { logger } from '../utils';
 
 import type {
@@ -112,7 +112,7 @@ async function createObject(
     logger.error('Type key used:', typeKey);
     throw new LocalizableError(
       'Failed to create Anytype object',
-      'notero-error-anytype-create-failed',
+      'anytero-error-anytype-create-failed',
     );
   }
 }
@@ -162,7 +162,7 @@ async function updateObject(
 
     throw new LocalizableError(
       'Failed to update Anytype object',
-      'notero-error-anytype-update-failed',
+      'anytero-error-anytype-update-failed',
     );
   }
 }

@@ -1,6 +1,6 @@
 import { isObject, logger } from '../utils';
 
-import { getNoteroPref, NoteroPref, setNoteroPref } from './notero-pref';
+import { getAnyteroPref, AnyteroPref, setAnyteroPref } from './anytero-pref';
 
 export type CollectionSyncConfig = {
   syncEnabled: boolean;
@@ -16,7 +16,7 @@ export type CollectionSyncConfigsRecord = Record<
  * @returns An object of sync configs keyed by collection ID.
  */
 export function loadSyncConfigs(): CollectionSyncConfigsRecord {
-  const json = getNoteroPref(NoteroPref.collectionSyncConfigs);
+  const json = getAnyteroPref(AnyteroPref.collectionSyncConfigs);
   return parseSyncConfigs(json);
 }
 
@@ -57,7 +57,7 @@ export function loadSyncEnabledCollectionIDs(): Set<Zotero.Collection['id']> {
  * @param configs An object of sync configs.
  */
 export function saveSyncConfigs(configs: CollectionSyncConfigsRecord): void {
-  setNoteroPref(NoteroPref.collectionSyncConfigs, JSON.stringify(configs));
+  setAnyteroPref(AnyteroPref.collectionSyncConfigs, JSON.stringify(configs));
 }
 
 /**

@@ -26,7 +26,7 @@ jobs:
         uses: actions/github-script@v8
         with:
           result-encoding: string
-          script: return `notero-${require('./gen/version')}`
+          script: return `anytero-${require('./gen/version')}`
       - id: upload-artifact
         name: Upload xpi artifact
         uses: actions/upload-artifact@v6

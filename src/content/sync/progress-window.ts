@@ -16,7 +16,7 @@ export class ProgressWindow {
   }
 
   public async show() {
-    const headline = await this.l10n.formatValue('notero-progress-headline');
+    const headline = await this.l10n.formatValue('anytero-progress-headline');
     this.progressWindow.changeHeadline(headline || 'Syncing items to Anytype…');
     this.progressWindow.show();
     this.itemProgress = new this.progressWindow.ItemProgress('document', '');
@@ -25,7 +25,7 @@ export class ProgressWindow {
   public async updateText(step: number) {
     const args = { step, total: this.itemCount };
     const message =
-      (await this.l10n.formatValue('notero-progress-item', args)) ||
+      (await this.l10n.formatValue('anytero-progress-item', args)) ||
       `Item ${step} of ${this.itemCount}`;
     this.itemProgress.setText(message);
   }

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-pref('extensions.notero.collectionSyncConfigs', '');
-pref('extensions.notero.pageTitleFormat', 'itemAuthorDateCitation');
-pref('extensions.notero.syncNotes', false);
-pref('extensions.notero.syncOnModifyItems', true);
+pref('extensions.anytero.collectionSyncConfigs', '');
+pref('extensions.anytero.pageTitleFormat', 'itemAuthorDateCitation');
+pref('extensions.anytero.syncNotes', false);
+pref('extensions.anytero.syncOnModifyItems', true);
