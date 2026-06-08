@@ -191,12 +191,7 @@ class AnytypePropertyBuilder {
     [PageTitleFormat.itemShortTitle]: () => this.getShortTitle(),
     [PageTitleFormat.itemTitle]: () => this.getTitle(),
     [PageTitleFormat.itemTitleTitleCase]: () =>
-      this.getTitle().replace(/\p{L}\S*/gu, (word) =>
-        word
-          .split('-')
-          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-          .join('-'),
-      ),
+      Zotero.Utilities.capitalizeTitle(this.getTitle(), true),
   };
 
   private async getPageTitle(): Promise<string> {
