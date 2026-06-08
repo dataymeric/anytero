@@ -54,6 +54,8 @@ anytero-preferences-sync-on-modify-items =
     .label = Sync when items are modified
 anytero-preferences-sync-notes =
     .label = Sync notes
+anytero-preferences-sync-reading-list-status =
+    .label = Sync reading list status (requires Reading List plugin)
 
 ## Progress window
 
