@@ -6,7 +6,11 @@
 
 import type { AnytypeProperty } from '../anytype';
 import { NOTION_TAG_NAME } from '../constants';
-import { PageTitleFormat } from '../prefs/anytero-pref';
+import {
+  AnyteroPref,
+  PageTitleFormat,
+  getAnyteroPref,
+} from '../prefs/anytero-pref';
 import {
   buildCollectionFullName,
   getItemURL,
@@ -371,6 +375,18 @@ class AnytypePropertyBuilder {
           key: 'url',
           url,
         };
+      },
+    },
+    {
+      key: 'reading_status',
+      buildValue: () => {
+        if (!getAnyteroPref(AnyteroPref.syncReadingListStatus)) return null;
+        const extra = this.item.getField('extra');
+        if (!extra) return null;
+        const match = extra.match(/^Read_Status:\s*(.+)$/m);
+        const status = match?.[1]?.trim();
+        if (!status) return null;
+        return { key: 'reading_status', select: status };
       },
     },
   ];
