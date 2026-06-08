@@ -18,7 +18,9 @@ import {
   getAnytypeObjectID,
   saveAnytypeLinkAttachment,
   saveAnytypeTag,
+  saveSyncedNotes,
 } from './item-data';
+import { composeItemBody, renderNotesSection } from './note-renderer';
 import { buildAnytypeProperties } from './property-builder';
 
 export type SyncRegularItemParams = {
@@ -37,10 +39,13 @@ export async function syncRegularItem(
   item: Zotero.Item,
   params: SyncRegularItemParams,
 ): Promise<void> {
-  const anytypeObject = await saveItemToSpace(item, params);
+  const { markdown: noteSection, noteKeys } = renderNotesSection(item);
+
+  const anytypeObject = await saveItemToSpace(item, params, noteSection);
 
   await saveAnytypeTag(item);
   await saveAnytypeLinkAttachment(item, anytypeObject.id, params.spaceId);
+  await saveSyncedNotes(item, noteKeys);
 }
 
 /**
@@ -49,18 +54,24 @@ export async function syncRegularItem(
 async function saveItemToSpace(
   item: Zotero.Item,
   params: SyncRegularItemParams,
+  noteSection: string,
 ): Promise<AnytypeObject> {
   const { anytypeClient, spaceId, typeKey, citationFormat, pageTitleFormat } =
     params;
 
   const objectId = getAnytypeObjectID(item);
 
-  // Build properties and body from Zotero item
-  const { name, body, properties } = await buildAnytypeProperties({
+  const {
+    name,
+    body: bibBody,
+    properties,
+  } = await buildAnytypeProperties({
     item,
     citationFormat,
     pageTitleFormat,
   });
+
+  const body = composeItemBody(bibBody, noteSection);
 
   if (objectId) {
     return updateObject(
