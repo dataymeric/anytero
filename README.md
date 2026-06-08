@@ -107,7 +107,7 @@ Anytype workspace. Detailed setup instructions are below.
 >
 > - The latest release of Anytero requires Zotero 7.0 or above.
 > - Anytero requires Anytype Desktop application to be installed and running.
-> - See the [changelog](CHANGELOG.md) for all release notes.
+> - See the [releases page][latest release] for all release notes.
 
 1. [Download][] the latest release of the `.xpi` file.
    - Alternatively, download the `.xpi` file from the **Assets** section of the
@@ -206,18 +206,8 @@ of Anytero's current functionality.
 
 ### How to sync attached files into Anytype
 
-Currently, Anytero syncs metadata and notes but not file attachments. This is due
-to limitations in how both Zotero and Anytype handle file storage:
-
-- The Anytype API focuses on object properties and content blocks rather than
-  large file attachments.
-- Local file paths may not be accessible from different devices.
-
-For now, the best workarounds are:
-
-- Use the `File Path` property to point you to the location of the local file.
-- If you sync your files into your Zotero account, you can open the Zotero web
-  interface from the `Zotero URI` property and then open the file from there.
+Currently, Anytero syncs metadata and notes but not file attachments. Use the
+synced `url` or `doi` properties to locate the original source.
 
 ### How to bulk sync existing items
 
