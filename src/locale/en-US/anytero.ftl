@@ -5,7 +5,7 @@ anytero-collection-menu-sync =
 anytero-item-menu-sync =
     .label = Sync to Anytype
 anytero-tools-menu-preferences =
-    .label = Anytero Preferences…
+    .label = Anytero Preferences
 
 ## Anytype preferences
 
